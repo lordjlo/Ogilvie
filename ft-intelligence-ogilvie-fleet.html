@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intelligence Report — Ogilvie Fleet | Friction &amp; Toil</title>
+  <style>
+    :root {
+      --ft-bg: #0a0e17;
+      --ft-surface: #111827;
+      --ft-surface-elevated: #1a2235;
+      --ft-border: #1e293b;
+      --ft-text: #e2e8f0;
+      --ft-text-muted: #94a3b8;
+      --ft-accent: #3b82f6;
+      --ft-gold: #c9a84c;
+      --ft-red: #ef4444;
+      --ft-amber: #f59e0b;
+      --ft-blue: #3b82f6;
+      --ft-green: #22c55e;
+      --ft-glass: rgba(17,24,39,0.7);
+      --ft-glass-border: rgba(255,255,255,0.08);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--ft-bg);color:var(--ft-text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
+    a{color:var(--ft-accent);text-decoration:none}
+    /* PASSWORD GATE */
+    #password-gate{position:fixed;inset:0;background:var(--ft-bg);z-index:9999;display:flex;align-items:center;justify-content:center}
+    #password-gate.hidden{display:none}
+    .gate-container{text-align:center;max-width:400px;padding:40px}
+    .gate-container h1{color:var(--ft-gold);font-size:28px;margin-bottom:8px}
+    .gate-container .gate-brand{color:var(--ft-text-muted);font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:32px}
+    .gate-container p{color:var(--ft-text-muted);margin-bottom:24px;font-size:14px}
+    .gate-container input{width:100%;padding:12px 16px;background:var(--ft-surface);border:1px solid var(--ft-border);color:var(--ft-text);border-radius:8px;font-size:16px;outline:none;margin-bottom:12px}
+    .gate-container input:focus{border-color:var(--ft-gold)}
+    .gate-container button{width:100%;padding:12px;background:linear-gradient(135deg,#c9a84c,#d4af37);color:#0a0e17;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer}
+    .gate-error{color:var(--ft-red);font-size:13px;margin-top:8px;min-height:20px}
+    /* NAVIGATION */
+    #ft-nav{position:sticky;top:0;z-index:100;background:rgba(10,14,23,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--ft-border);display:flex;align-items:center;padding:0 24px;height:60px;gap:8px}
+    .nav-brand{color:var(--ft-gold);font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;white-space:nowrap;margin-right:16px}
+    .nav-tabs{display:flex;gap:4px;flex:1}
+    .nav-tabs button{padding:6px 14px;background:transparent;border:1px solid transparent;color:var(--ft-text-muted);border-radius:6px;font-size:13px;cursor:pointer;transition:all 0.2s;white-space:nowrap}
+    .nav-tabs button:hover{color:var(--ft-text);border-color:var(--ft-border)}
+    .nav-tabs button.active{background:var(--ft-surface-elevated);color:var(--ft-gold);border-color:var(--ft-gold)}
+    .print-btn{padding:6px 14px;background:transparent;border:1px solid var(--ft-border);color:var(--ft-text-muted);border-radius:6px;font-size:12px;cursor:pointer;white-space:nowrap}
+    .print-btn:hover{border-color:var(--ft-text-muted);color:var(--ft-text)}
+    /* SECTIONS */
+    .level{display:none;min-height:calc(100vh - 60px);padding:32px 24px;max-width:1400px;margin:0 auto}
+    .level.active{display:block}
+    /* GLASS CARDS */
+    .glass-card{background:var(--ft-glass);backdrop-filter:blur(12px);border:1px solid var(--ft-glass-border);border-radius:16px;padding:24px;margin-bottom:20px}
+    .gold-card{border-color:rgba(201,168,76,0.3);background:rgba(201,168,76,0.04)}
+    /* TYPOGRAPHY */
+    h1{font-size:36px;font-weight:700;line-height:1.2}
+    h2{font-size:24px;font-weight:700;margin-bottom:16px}
+    h3{font-size:18px;font-weight:600;margin-bottom:12px}
+    h4{font-size:15px;font-weight:600;margin-bottom:8px;color:var(--ft-text-muted);text-transform:uppercase;letter-spacing:0.5px}
+    .hero-text{font-size:24px;line-height:1.5;font-style:italic;color:var(--ft-text)}
+    .gold-text{color:var(--ft-gold)}
+    .muted{color:var(--ft-text-muted)}
+    .small{font-size:13px}
+    /* BADGES */
+    .badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:0.5px;text-transform:uppercase}
+    .badge-data{background:var(--ft-green);color:#0a0e17}
+    .badge-assessed{background:var(--ft-amber);color:#0a0e17}
+    .badge-low{background:var(--ft-red);color:#fff}
+    .badge-amber{background:rgba(245,158,11,0.15);color:var(--ft-amber);border:1px solid rgba(245,158,11,0.3)}
+    .badge-blue{background:rgba(59,130,246,0.15);color:var(--ft-blue);border:1px solid rgba(59,130,246,0.3)}
+    .badge-green{background:rgba(34,197,94,0.15);color:var(--ft-green);border:1px solid rgba(34,197,94,0.3)}
+    .badge-red{background:rgba(239,68,68,0.15);color:var(--ft-red);border:1px solid rgba(239,68,68,0.3)}
+    .badge-gold{background:rgba(201,168,76,0.15);color:var(--ft-gold);border:1px solid rgba(201,168,76,0.3);font-size:12px;padding:3px 10px;border-radius:20px}
+    /* IDENTITY BLOCK */
+    .identity-block{background:linear-gradient(135deg,#0f172a,#1a2235);border:1px solid rgba(201,168,76,0.2);border-radius:16px;padding:28px 32px;margin-bottom:24px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px}
+    .identity-company{font-size:36px;font-weight:700;color:var(--ft-gold);line-height:1}
+    .identity-meta{color:var(--ft-text-muted);font-size:14px;margin-top:8px}
+    /* RINGS */
+    .rings-row{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:24px}
+    @media(max-width:900px){.rings-row{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:480px){.rings-row{grid-template-columns:1fr}}
+    .ring-card{background:var(--ft-glass);border:1px solid var(--ft-glass-border);border-radius:16px;padding:24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:12px}
+    .ring-card svg{overflow:visible}
+    .ring-score-text{font-size:32px;font-weight:700;line-height:1}
+    .ring-label{font-size:12px;color:var(--ft-text-muted);text-transform:uppercase;letter-spacing:1px}
+    .ring-justification{font-size:13px;color:var(--ft-text-muted);text-align:center;line-height:1.5;max-width:200px}
+    .ring-therefore{font-size:12px;color:var(--ft-text);font-style:italic;text-align:center;border-top:1px solid var(--ft-border);padding-top:12px;width:100%}
+    /* DECISIONS */
+    .decision-card{background:var(--ft-surface);border:1px solid var(--ft-border);border-left:3px solid var(--ft-gold);border-radius:8px;padding:16px 20px;margin-bottom:12px}
+    .decision-title{font-size:15px;font-weight:600;color:var(--ft-text);margin-bottom:8px}
+    .decision-meta{display:flex;flex-direction:column;gap:4px}
+    .decision-row{display:flex;gap:8px;font-size:13px}
+    .decision-row-label{color:var(--ft-gold);font-weight:600;white-space:nowrap;min-width:80px}
+    .decision-row-val{color:var(--ft-text-muted)}
+    /* TAB NAV CARDS */
+    .tab-nav-row{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:24px}
+    @media(max-width:700px){.tab-nav-row{grid-template-columns:1fr}}
+    .tab-nav-card{background:var(--ft-glass);border:1px solid var(--ft-glass-border);border-radius:16px;padding:20px;cursor:pointer;transition:border-color 0.2s}
+    .tab-nav-card:hover{border-color:var(--ft-gold)}
+    .tab-nav-card .tnc-icon{font-size:28px;margin-bottom:8px}
+    .tab-nav-card .tnc-name{font-size:16px;font-weight:600;margin-bottom:4px}
+    .tab-nav-card .tnc-score{font-size:22px;font-weight:700;margin-bottom:8px}
+    .tab-nav-card .tnc-teaser{font-size:13px;color:var(--ft-text-muted);margin-bottom:16px;line-height:1.5}
+    .tab-nav-card .tnc-btn{display:inline-block;padding:8px 20px;background:var(--ft-surface-elevated);border:1px solid var(--ft-border);color:var(--ft-text);border-radius:6px;font-size:13px;cursor:pointer;transition:all 0.2s}
+    .tab-nav-card .tnc-btn:hover{border-color:var(--ft-gold);color:var(--ft-gold)}
+    /* VALUE STATEMENT */
+    .value-statement{background:linear-gradient(135deg,rgba(201,168,76,0.06),rgba(59,130,246,0.06));border:1px solid rgba(201,168,76,0.2);border-radius:16px;padding:28px 32px;margin-bottom:24px;text-align:center}
+    .value-number{font-size:52px;font-weight:700;color:var(--ft-gold);line-height:1;margin-bottom:12px}
+    .value-label{font-size:16px;color:var(--ft-text-muted);max-width:600px;margin:0 auto;line-height:1.6}
+    /* INTERNAL TABS (sub-tabs) */
+    .sub-tabs-nav{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--ft-border)}
+    .sub-tabs-nav button{padding:6px 14px;background:transparent;border:1px solid var(--ft-border);color:var(--ft-text-muted);border-radius:6px;font-size:13px;cursor:pointer;transition:all 0.2s}
+    .sub-tabs-nav button:hover{color:var(--ft-text);border-color:var(--ft-text-muted)}
+    .sub-tabs-nav button.active{background:var(--ft-surface-elevated);color:var(--ft-gold);border-color:rgba(201,168,76,0.4)}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+    /* TABLES */
+    .ft-table{width:100%;border-collapse:collapse;font-size:14px;margin:16px 0}
+    .ft-table th{background:var(--ft-surface-elevated);color:var(--ft-text-muted);font-size:11px;text-transform:uppercase;letter-spacing:0.5px;padding:10px 12px;text-align:left;border-bottom:1px solid var(--ft-border)}
+    .ft-table td{padding:10px 12px;border-bottom:1px solid rgba(30,41,59,0.5);vertical-align:top;color:var(--ft-text)}
+    .ft-table tr:hover td{background:rgba(255,255,255,0.02)}
+    .ft-table tr:last-child td{border-bottom:none}
+    /* THEREFORE BLOCK */
+    .therefore-block{background:linear-gradient(135deg,rgba(201,168,76,0.06),transparent);border-left:3px solid var(--ft-gold);border-radius:0 8px 8px 0;padding:16px 20px;margin-top:20px}
+    .therefore-block strong{color:var(--ft-gold)}
+    /* SCENARIO CARDS */
+    .scenario-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:16px 0}
+    @media(max-width:700px){.scenario-row{grid-template-columns:1fr}}
+    .scenario-card{background:var(--ft-surface);border:1px solid var(--ft-border);border-radius:12px;padding:20px}
+    .scenario-card.bear{border-color:rgba(239,68,68,0.3)}
+    .scenario-card.base{border-color:rgba(245,158,11,0.3)}
+    .scenario-card.bull{border-color:rgba(34,197,94,0.3)}
+    .scenario-pct{font-size:28px;font-weight:700;margin-bottom:4px}
+    .scenario-pct.bear{color:var(--ft-red)}
+    .scenario-pct.base{color:var(--ft-amber)}
+    .scenario-pct.bull{color:var(--ft-green)}
+    /* SIGNALS GRID */
+    .signals-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:16px 0}
+    @media(max-width:600px){.signals-grid{grid-template-columns:1fr}}
+    .signal-item{background:var(--ft-surface);border:1px solid var(--ft-border);border-radius:8px;padding:14px}
+    /* MEETING PLACEHOLDER */
+    .placeholder-card{background:var(--ft-surface);border:2px dashed var(--ft-border);border-radius:16px;padding:48px;text-align:center}
+    .placeholder-card h3{margin-bottom:16px;color:var(--ft-text-muted)}
+    .placeholder-card p{color:var(--ft-text-muted);font-size:14px;margin-bottom:24px;max-width:500px;margin-left:auto;margin-right:auto}
+    /* STRATEGIC HEADER */
+    .strategic-header{border-left:4px solid var(--ft-gold);background:rgba(201,168,76,0.04);border-radius:0 12px 12px 0;padding:20px 24px;margin-bottom:24px;font-style:italic;font-size:15px;line-height:1.7}
+    /* ADVISE CEO CARD */
+    .advise-ceo-card{background:var(--ft-surface);border:2px solid var(--ft-gold);border-radius:16px;padding:28px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+    .advise-ceo-card h3{color:var(--ft-gold);font-size:20px;margin:0 0 4px}
+    .advise-ceo-card p{color:var(--ft-text-muted);font-size:14px;margin:0}
+    .advise-ceo-btn{padding:12px 24px;background:linear-gradient(135deg,#c9a84c,#d4af37);color:#0a0e17;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap}
+    /* ASK SECTION BUTTON */
+    .ask-section-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:transparent;border:1px solid rgba(201,168,76,0.3);color:var(--ft-text-muted);border-radius:6px;font-size:12px;cursor:pointer;margin-top:16px;transition:all 0.2s}
+    .ask-section-btn:hover{border-color:var(--ft-gold);color:var(--ft-gold)}
+    /* COLLAPSIBLE */
+    .collapsible-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:12px 0;border-bottom:1px solid var(--ft-border);user-select:none}
+    .collapsible-header:hover h3{color:var(--ft-gold)}
+    .collapsible-body{overflow:hidden;transition:max-height 0.3s ease}
+    .collapsible-body.collapsed{display:none}
+    /* CHATBOT */
+    #chatbot-toggle{position:fixed;bottom:24px;right:24px;width:56px;height:56px;background:linear-gradient(135deg,#c9a84c,#d4af37);border:none;border-radius:50%;cursor:pointer;z-index:500;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 20px rgba(201,168,76,0.4);transition:transform 0.2s}
+    #chatbot-toggle:hover{transform:scale(1.1)}
+    #chatbot-panel{position:fixed;bottom:90px;right:24px;width:400px;height:520px;background:rgba(17,24,39,0.97);backdrop-filter:blur(12px);border:1px solid rgba(201,168,76,0.2);border-radius:16px;z-index:499;display:none;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
+    #chatbot-panel.open{display:flex}
+    .chat-header{background:linear-gradient(135deg,#1a2235,#0a0e17);border-bottom:1px solid #c9a84c;padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+    .chat-header-title{color:var(--ft-gold);font-weight:700;font-size:14px}
+    .chat-header-meta{color:var(--ft-text-muted);font-size:11px;margin-top:2px}
+    .chat-close{background:none;border:none;color:var(--ft-text-muted);cursor:pointer;font-size:18px;padding:4px}
+    .chat-close:hover{color:var(--ft-text)}
+    .chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+    .chat-messages::-webkit-scrollbar{width:4px}
+    .chat-messages::-webkit-scrollbar-thumb{background:var(--ft-border);border-radius:2px}
+    .msg{max-width:85%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.5}
+    .msg.user{background:#3b82f6;color:#fff;align-self:flex-end;border-radius:12px 12px 0 12px}
+    .msg.advisor{background:#1a2235;border:1px solid rgba(201,168,76,0.15);color:var(--ft-text);align-self:flex-start;border-radius:12px 12px 12px 0}
+    .msg.thinking{color:var(--ft-text-muted);font-style:italic}
+    .starter-questions{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+    .starter-q{background:var(--ft-surface);border:1px solid var(--ft-border);color:var(--ft-text-muted);border-radius:8px;padding:8px 12px;font-size:12px;cursor:pointer;text-align:left;transition:all 0.2s}
+    .starter-q:hover{border-color:var(--ft-gold);color:var(--ft-text)}
+    .chat-input-row{padding:12px 16px;border-top:1px solid var(--ft-border);display:flex;gap:8px}
+    .chat-input{flex:1;background:#111827;border:1px solid var(--ft-border);color:var(--ft-text);border-radius:8px;padding:8px 12px;font-size:13px;outline:none;resize:none;height:38px}
+    .chat-input:focus{border-color:rgba(201,168,76,0.4)}
+    .chat-send{padding:8px 14px;background:var(--ft-gold);color:#0a0e17;border:none;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer}
+    .chat-send:hover{background:#d4af37}
+    /* FOOTER */
+    footer{text-align:center;padding:32px 24px;color:var(--ft-text-muted);font-size:12px;border-top:1px solid var(--ft-border);margin-top:40px}
+    /* PRINT */
+    @media print{
+      #ft-nav{position:static}
+      #chatbot-toggle,#chatbot-panel{display:none!important}
+      .level.active,.level{display:block;page-break-before:always}
+      .glass-card{background:#fff;color:#000;border:1px solid #ccc}
+      body{background:#fff;color:#000}
+    }
+    /* RESPONSIVE NAV */
+    @media(max-width:700px){
+      #ft-nav{flex-wrap:wrap;height:auto;padding:8px}
+      .nav-tabs button{font-size:12px;padding:5px 10px}
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════
+     PASSWORD GATE
+════════════════════════════════════════════════════════════ -->
+<div id="password-gate">
+  <div class="gate-container">
+    <div class="gate-brand">Friction &amp; Toil</div>
+    <h1>Intelligence Report</h1>
+    <p>This report is confidential and prepared exclusively for authorised recipients. Enter your access code to view.</p>
+    <input type="password" id="gate-input" placeholder="Access code" onkeydown="if(event.key==='Enter')checkPassword()">
+    <div class="gate-error" id="gate-error"></div>
+    <button onclick="checkPassword()">Access Report →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     TOP NAVIGATION
+════════════════════════════════════════════════════════════ -->
+<nav id="ft-nav">
+  <div class="nav-brand">F&amp;T Intelligence</div>
+  <div class="nav-tabs">
+    <button data-level="dashboard" class="active" onclick="switchLevel('dashboard',this)">Dashboard</button>
+    <button data-level="strategic" onclick="switchLevel('strategic',this)">CEO Strategic</button>
+    <button data-level="meeting" onclick="switchLevel('meeting',this)">Meeting Intel</button>
+    <button data-level="web" onclick="switchLevel('web',this)">Web Intel</button>
+  </div>
+  <button class="print-btn" onclick="window.print()">Export PDF</button>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════
+     DASHBOARD
+════════════════════════════════════════════════════════════ -->
+<section id="level-dashboard" class="level active">
+
+  <!-- Identity Block -->
+  <div class="identity-block">
+    <div>
+      <div class="identity-company">Ogilvie Fleet</div>
+      <div class="identity-meta">UK Independent Fleet Leasing &nbsp;·&nbsp; UK Only &nbsp;·&nbsp; Generated 2 April 2026</div>
+      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+        <span class="badge-gold badge">Brochure / Credibility</span>
+        <span class="badge badge-assessed">Variant D — Full Unified</span>
+        <span class="badge badge-data">FN50 Rank #14</span>
+      </div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:12px;color:var(--ft-text-muted);text-transform:uppercase;letter-spacing:1px">Report Stage</div>
+      <div style="font-size:20px;font-weight:700;color:var(--ft-gold);margin-top:4px">Full System</div>
+      <div style="font-size:12px;color:var(--ft-text-muted);margin-top:4px">Friction &amp; Toil Intelligence Systems v2.0</div>
+    </div>
+  </div>
+
+  <!-- Most Important Finding -->
+  <div class="glass-card gold-card" style="margin-bottom:24px">
+    <div style="font-size:11px;color:var(--ft-gold);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px">⚡ The Single Most Important Finding</div>
+    <p class="hero-text">"Ogilvie Fleet is a <strong style="color:var(--ft-gold)">£200–£320M acquisition target</strong> in a sector in late-stage consolidation, carrying up to <strong style="color:var(--ft-amber)">£28M of unprovisioned EV residual value exposure</strong> on an independently capitalised family balance sheet — with a simultaneous leadership transition and unbuilt AI capability compressing the window to act on the company's own terms before sector pressure forces the decision."</p>
+  </div>
+
+  <!-- Four Score Rings -->
+  <div class="rings-row">
+
+    <!-- Ring 1: Strategic Health — 51 AMBER -->
+    <div class="ring-card">
+      <svg width="140" height="140" viewBox="0 0 140 140" aria-label="Strategic Health: 51 out of 100">
+        <circle cx="70" cy="70" r="66" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
+        <circle cx="70" cy="70" r="66" fill="none" stroke="#f59e0b" stroke-width="8"
+          stroke-dasharray="211 415" stroke-dashoffset="104" stroke-linecap="round"
+          transform="rotate(-90 70 70)" class="ring-progress" data-score="51"/>
+        <text x="70" y="68" text-anchor="middle" fill="#f59e0b" font-size="30" font-weight="700">51</text>
+        <text x="70" y="84" text-anchor="middle" fill="#94a3b8" font-size="11">/100</text>
+      </svg>
+      <div class="ring-label">Strategic Health</div>
+      <span class="badge badge-assessed">ASSESSED</span>
+      <div class="ring-justification">M&amp;A kill zone + EV RV exposure + regulatory stack creates asymmetric downside risk despite strong sentiment</div>
+      <div class="ring-therefore"><strong>Therefore:</strong> Proactively shape the M&amp;A conversation now, before sector pressure removes that option</div>
+    </div>
+
+    <!-- Ring 2: Web Presence — 54 AMBER -->
+    <div class="ring-card">
+      <svg width="140" height="140" viewBox="0 0 140 140" aria-label="Web Presence: 54 out of 100">
+        <circle cx="70" cy="70" r="66" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
+        <circle cx="70" cy="70" r="66" fill="none" stroke="#f59e0b" stroke-width="8"
+          stroke-dasharray="220 415" stroke-dashoffset="104" stroke-linecap="round"
+          transform="rotate(-90 70 70)" class="ring-progress" data-score="53"/>
+        <text x="70" y="68" text-anchor="middle" fill="#f59e0b" font-size="30" font-weight="700">53</text>
+        <text x="70" y="84" text-anchor="middle" fill="#94a3b8" font-size="11">/100</text>
+      </svg>
+      <div class="ring-label">Web Presence</div>
+      <span class="badge badge-assessed">ASSESSED</span>
+      <div class="ring-justification">Site technically competent but communicates ~35% of actual market position — 98% retention, FN50 #14, Investors in People Platinum all absent from hero zone</div>
+      <div class="ring-therefore"><strong>Therefore:</strong> The website tells a dramatically smaller story than the business deserves — the referral validation moment is failing silently</div>
+    </div>
+
+    <!-- Ring 3: Market Position — 63 BLUE -->
+    <div class="ring-card">
+      <svg width="140" height="140" viewBox="0 0 140 140" aria-label="Market Position: 63 out of 100">
+        <circle cx="70" cy="70" r="66" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
+        <circle cx="70" cy="70" r="66" fill="none" stroke="#3b82f6" stroke-width="8"
+          stroke-dasharray="261 415" stroke-dashoffset="104" stroke-linecap="round"
+          transform="rotate(-90 70 70)" class="ring-progress" data-score="63"/>
+        <text x="70" y="68" text-anchor="middle" fill="#3b82f6" font-size="30" font-weight="700">63</text>
+        <text x="70" y="84" text-anchor="middle" fill="#94a3b8" font-size="11">/100</text>
+      </svg>
+      <div class="ring-label">Market Position</div>
+      <span class="badge badge-assessed">ASSESSED</span>
+      <div class="ring-justification">Dominant in SME/Scotland segment, 98% retention moat, but exposed to super-broker consolidation below and bank-backed scale above</div>
+      <div class="ring-therefore"><strong>Therefore:</strong> The SME moat is deep but the competitive window to build technology differentiation is 18–24 months</div>
+    </div>
+
+    <!-- Ring 4: Operational Readiness — 71 BLUE -->
+    <div class="ring-card">
+      <svg width="140" height="140" viewBox="0 0 140 140" aria-label="Operational Readiness: 71 out of 100">
+        <circle cx="70" cy="70" r="66" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
+        <circle cx="70" cy="70" r="66" fill="none" stroke="#3b82f6" stroke-width="8"
+          stroke-dasharray="294 415" stroke-dashoffset="104" stroke-linecap="round"
+          transform="rotate(-90 70 70)" class="ring-progress" data-score="71"/>
+        <text x="70" y="68" text-anchor="middle" fill="#3b82f6" font-size="30" font-weight="700">71</text>
+        <text x="70" y="84" text-anchor="middle" fill="#94a3b8" font-size="11">/100</text>
+      </svg>
+      <div class="ring-label">Operational Readiness</div>
+      <span class="badge badge-data">DATA</span>
+      <div class="ring-justification">6× Best Companies Outstanding, £1.7M revenue/employee, 98% retention — but five simultaneous execution fronts in 2026</div>
+      <div class="ring-therefore"><strong>Therefore:</strong> Cultural strength is the competitive moat — but execution bandwidth is at maximum; prioritise ruthlessly</div>
+    </div>
+  </div>
+
+  <!-- 90-Day Decision List -->
+  <div class="glass-card" style="margin-bottom:24px">
+    <h2>🎯 The 90-Day Decision List</h2>
+    <p class="small muted" style="margin-bottom:20px">Five decisions that require action in Q2 2026. Each is enabled by specific intelligence from this report.</p>
+
+    <div class="decision-card">
+      <div class="decision-title">1. Commission an EV Residual Value Stress Test</div>
+      <div class="decision-meta">
+        <div class="decision-row"><span class="decision-row-label">Why now:</span><span class="decision-row-val">Used EV supply forecast +178% by 2027; bear case loss exposure £18–28M above provision on £76M net assets; FCA Q3 2026 thematic review approaching</span></div>
+        <div class="decision-row"><span class="decision-row-label">Enabled by:</span><span class="decision-row-val">Scenario Planning + Regulatory Pipeline intelligence</span></div>
+      </div>
+    </div>
+
+    <div class="decision-card">
+      <div class="decision-title">2. Establish FCA Consumer Duty Board-Level Evidence Pack</div>
+      <div class="decision-meta">
+        <div class="decision-row"><span class="decision-row-label">Why now:</span><span class="decision-row-val">FCA PS26/3 Motor Finance Redress live 31 May 2026; Q3 2026 supervisory thematic review confirmed; first enforcement examples expected 2027</span></div>
+        <div class="decision-row"><span class="decision-row-label">Enabled by:</span><span class="decision-row-val">Regulatory Pipeline intelligence — 17 compliance actions identified</span></div>
+      </div>
+    </div>
+
+    <div class="decision-card">
+      <div class="decision-title">3. Take a Strategic Position on M&amp;A: Sell / Partner / Resist + Fund</div>
+      <div class="decision-meta">
+        <div class="decision-row"><span class="decision-row-label">Why now:</span><span class="decision-row-val">Novuna Vehicle Solutions actively acquiring; Zenith (PE exit overdue) will reshape the landscape; negotiation leverage is highest before a buyer sets the terms</span></div>
+        <div class="decision-row"><span class="decision-row-label">Enabled by:</span><span class="decision-row-val">M&amp;A Signals — Novuna identified as highest-probability acquirer; £200–320M valuation range benchmarked</span></div>
+      </div>
+    </div>
+
+    <div class="decision-card">
+      <div class="decision-title">4. Hire the First AI / Data Capability Below Andy Stephen</div>
+      <div class="decision-meta">
+        <div class="decision-row"><span class="decision-row-label">Why now:</span><span class="decision-row-val">AI mandate is 9 months old with zero visible hires; ONWRD integration is competing for attention; first hire should precede the next strategic announcement</span></div>
+        <div class="decision-row"><span class="decision-row-label">Enabled by:</span><span class="decision-row-val">Employee Intelligence — Technology &amp; Systems Director role created July 2025 with no talent pipeline behind it</span></div>
+      </div>
+    </div>
+
+    <div class="decision-card">
+      <div class="decision-title">5. Activate Scottish Media + Share-of-Voice Strategy</div>
+      <div class="decision-meta">
+        <div class="decision-row"><span class="decision-row-label">Why now:</span><span class="decision-row-val">Fleet Alliance absorbed into GVG (English-headquartered) leaves a Scottish fleet media vacuum; Q2 2026 awards cycle is the activation window</span></div>
+        <div class="decision-row"><span class="decision-row-label">Enabled by:</span><span class="decision-row-val">Media Sentiment — Scotland's only remaining independent fleet lessor of scale; spokesperson transition gap identified</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab Navigation Cards -->
+  <div class="tab-nav-row">
+    <div class="tab-nav-card" onclick="switchLevel('strategic',document.querySelector('[data-level=strategic]'))">
+      <div class="tnc-icon">🧠</div>
+      <div class="tnc-name">CEO Strategic Intelligence</div>
+      <div class="tnc-score" style="color:var(--ft-amber)">Ring 1: 51 <span class="small muted">/ 100</span></div>
+      <div class="tnc-teaser">M&amp;A exposure, EV residual risk, and a leadership transition converging at the same moment the sector's consolidation window is closing.</div>
+      <span class="tnc-btn">Open →</span>
+    </div>
+    <div class="tab-nav-card" onclick="switchLevel('meeting',document.querySelector('[data-level=meeting]'))">
+      <div class="tnc-icon">🤝</div>
+      <div class="tnc-name">Meeting Intelligence</div>
+      <div class="tnc-score" style="color:var(--ft-text-muted)">Activate with details</div>
+      <div class="tnc-teaser">Add meeting purpose, attendee names, and your objective to generate a full intelligence brief for any meeting with Ogilvie Fleet.</div>
+      <span class="tnc-btn">Activate →</span>
+    </div>
+    <div class="tab-nav-card" onclick="switchLevel('web',document.querySelector('[data-level=web]'))">
+      <div class="tnc-icon">🌐</div>
+      <div class="tnc-name">Web Intelligence</div>
+      <div class="tnc-score" style="color:var(--ft-amber)">Ring 2: 53 <span class="small muted">/ 100</span></div>
+      <div class="tnc-teaser">The website communicates approximately 35% of Ogilvie Fleet's actual market position. The 98% retention rate, FN50 #14 ranking, and Investors in People Platinum are absent from the homepage hero zone.</div>
+      <span class="tnc-btn">Open →</span>
+    </div>
+  </div>
+
+  <!-- Value Statement (Type C — Credibility Gap) -->
+  <div class="value-statement">
+    <div class="value-number">53/100</div>
+    <div class="value-label"><strong>Ring 2 — Web Presence: 53/100 (AMBER)</strong><br><br>Ogilvie Fleet's website communicates approximately <strong>35% of the company's actual market position.</strong> The 46-year operating history, £247M turnover, FN50 #14 ranking, 25,000 managed vehicles, 98% customer retention, 25+ industry awards, and Investors in People Platinum status (top 1% of UK employers) are the real story. The website tells only the first chapter. The warm referral who arrives to validate what their peer told them will find a professional, branded fleet company — not the UK's pre-eminent independent fleet operator. That gap costs conversions silently.</div>
+  </div>
+
+  <button class="ask-section-btn" onclick="openChatbot('Based on the Intelligence Dashboard findings for Ogilvie Fleet, what is the single most urgent action the CEO should take this week?')">🧠 Ask your Intelligence Advisor →</button>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     TAB 1: CEO STRATEGIC INTELLIGENCE
+════════════════════════════════════════════════════════════ -->
+<section id="level-strategic" class="level">
+
+  <!-- Advise the CEO Card -->
+  <div class="advise-ceo-card">
+    <div>
+      <h3>🧠 Advise the CEO</h3>
+      <p>Open an interactive advisory session based on the full strategic intelligence gathered for Ogilvie Fleet. Direct, decisive, board-ready.</p>
+    </div>
+    <button class="advise-ceo-btn" onclick="openAdviseCEO()">Start Advisory Session →</button>
+  </div>
+
+  <!-- Sub-tab Navigation -->
+  <div class="sub-tabs-nav" id="strategic-sub-nav">
+    <button class="active" onclick="switchSubTab('strategic','s-summary',this)">Executive Summary</button>
+    <button onclick="switchSubTab('strategic','s-sentiment',this)">Market Sentiment</button>
+    <button onclick="switchSubTab('strategic','s-stakeholders',this)">Stakeholder Map</button>
+    <button onclick="switchSubTab('strategic','s-scenarios',this)">Three Scenarios</button>
+    <button onclick="switchSubTab('strategic','s-regulatory',this)">Regulatory Pipeline</button>
+    <button onclick="switchSubTab('strategic','s-ma',this)">M&amp;A Signals</button>
+    <button onclick="switchSubTab('strategic','s-employee',this)">Employee Intelligence</button>
+    <button onclick="switchSubTab('strategic','s-competitive',this)">Competitive Intel</button>
+    <button onclick="switchSubTab('strategic','s-decisions',this)">90-Day Decisions</button>
+  </div>
+
+  <!-- EXECUTIVE SUMMARY -->
+  <div id="s-summary" class="tab-content active">
+    <div class="glass-card">
+      <h2>Executive Summary</h2>
+      <span class="badge badge-assessed" style="margin-bottom:16px;display:inline-block">ASSESSED</span>
+      <div class="strategic-header">
+        Ogilvie Fleet enters Q2 2026 as the UK's pre-eminent independent fleet lessor — £247M turnover, 25,000 vehicles under management, 98% customer retention, 20+ industry awards, and a 46-year track record built from a single base in Stirling. The business has completed the most significant leadership transition in its history, survived the EV residual value crisis better than most peers, and acquired its first external business (ONWRD, December 2025). It is, by any measure, well-run and well-positioned. The strategic danger is not incompetence — it is that a series of structural forces outside the company's control are converging on a narrow window.
+      </div>
+      <h3>State of Play</h3>
+      <table class="ft-table">
+        <tr><th>Metric</th><th>Value</th><th>Signal</th></tr>
+        <tr><td>Annual Turnover (FY Jun 2023)</td><td><strong>£247M</strong></td><td><span class="badge badge-data">DATA</span></td></tr>
+        <tr><td>Vehicles on Risk</td><td><strong>~22,000</strong></td><td><span class="badge badge-data">DATA</span></td></tr>
+        <tr><td>Vehicles Under Management</td><td><strong>~25,000</strong></td><td><span class="badge badge-data">DATA</span></td></tr>
+        <tr><td>FN50 Ranking</td><td><strong>#14</strong></td><td><span class="badge badge-data">DATA</span></td></tr>
+        <tr><td>Customer Retention</td><td><strong>98%</strong></td><td><span class="badge badge-data">DATA</span></td></tr>
+        <tr><td>Net Assets</td><td><strong>£76M</strong></td><td><span class="badge badge-data">DATA</span></td></tr>
+        <tr><td>Cash Reserves</td><td><strong>£49.4M</strong></td><td><span class="badge badge-data">DATA</span></td></tr>
+        <tr><td>Employees</td><td><strong>127–150</strong></td><td><span class="badge badge-data">DATA</span></td></tr>
+        <tr><td>Revenue Per Employee</td><td><strong>~£1.7M</strong></td><td><span class="badge badge-assessed">ASSESSED</span></td></tr>
+        <tr><td>Ownership</td><td><strong>100% Family (Duncan Ogilvie)</strong></td><td><span class="badge badge-data">DATA</span></td></tr>
+        <tr><td>Recent Acquisition</td><td><strong>ONWRD (Dec 2025)</strong></td><td><span class="badge badge-data">DATA</span></td></tr>
+      </table>
+
+      <h3 style="margin-top:24px">Top 3 Findings</h3>
+      <div class="signals-grid">
+        <div class="signal-item" style="border-color:rgba(239,68,68,0.3)">
+          <h4 style="color:var(--ft-red)">01 — EV Residual Value Exposure</h4>
+          <p class="small">Used EV supply forecast +178% by 2027. Industry profits fell 91% in 2025 on RV losses. Bear case: £18–28M above-provision losses on Ogilvie's £76M net asset base. No bank parent to absorb excess. The book must be stress-tested this quarter.</p>
+        </div>
+        <div class="signal-item" style="border-color:rgba(245,158,11,0.3)">
+          <h4 style="color:var(--ft-amber)">02 — M&amp;A Target in Late Consolidation</h4>
+          <p class="small">Valuation: £200–320M. Novuna Vehicle Solutions identified as highest-probability acquirer (MUFG-backed, fastest-growing FN50, lacks Scottish/SME depth Ogilvie owns). Family ownership is the barrier — and the eventual catalyst. Window to act on own terms: 12–18 months.</p>
+        </div>
+        <div class="signal-item" style="border-color:rgba(59,130,246,0.3)">
+          <h4 style="color:var(--ft-blue)">03 — Peak Execution Risk Window</h4>
+          <p class="small">Five simultaneous execution fronts: ONWRD integration, new MD bedding in, salary sacrifice scale-up, south expansion, AI mandate (no visible talent). This is the highest-execution-risk window in recent company history — bandwidth is at maximum.</p>
+        </div>
+      </div>
+
+      <div class="therefore-block">
+        <strong>Therefore:</strong> The CEO's most consequential decisions in Q2 2026 are not operational — they are structural: stress-test the EV book, take a position on M&amp;A, and hire the first AI capability. Every week of delay on these three narrows the available options.
+      </div>
+      <button class="ask-section-btn" onclick="openChatbot('Based on the Executive Summary for Ogilvie Fleet, what should the CEO prioritise in the first 30 days?')">🧠 Ask about this section →</button>
+    </div>
+  </div>
+
+  <!-- MARKET SENTIMENT -->
+  <div id="s-sentiment" class="tab-content">
+    <div class="glass-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:20px">
+        <h2>Market Sentiment</h2>
+        <span class="badge badge-assessed">ASSESSED</span>
+      </div>
+      <p class="small muted" style="margin-bottom:20px">Sources: Fleet News, Fleet World, Business Motoring, Auto Express (fleet desk), Scottish trade media, LinkedIn public profiles, Companies House. Coverage period: January 2023 – April 2026.</p>
+
+      <h3>Sentiment Trajectory</h3>
+      <table class="ft-table">
+        <tr><th>Period</th><th>Sentiment</th><th>Key Driver</th></tr>
+        <tr><td>Jan–Dec 2023</td><td><span class="badge badge-green">Positive / Rising</span></td><td>9% fleet growth; industry-leading retention; EV early leadership positioning</td></tr>
+        <tr><td>Jan–Jun 2024</td><td><span class="badge badge-assessed">Positive / Plateau</span></td><td>EV residual value sector pressure; Ogilvie quoted as "managing the transition"</td></tr>
+        <tr><td>Jul–Dec 2024</td><td><span class="badge badge-assessed">Positive / Stable</span></td><td>MiSalarySacrifice expansion covered; Ogilvie differentiated from sector distress stories</td></tr>
+        <tr><td>Jan–Jun 2025</td><td><span class="badge badge-green">Positive / Rising</span></td><td>Awards recognition; sector consolidation positions Ogilvie as stable independent</td></tr>
+        <tr><td>Jul 2025 – Apr 2026</td><td><span class="badge badge-green">Very Positive</span></td><td>MD succession positive; ONWRD acquisition; ReLease product innovation coverage</td></tr>
+      </table>
+
+      <h3 style="margin-top:24px">Five Dominant Narrative Frames</h3>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:16px 0">
+        <div class="signal-item"><strong>"Best-in-class independent"</strong> — Trade press positions Ogilvie as quality benchmark for non-bank-backed fleet lessors. Framing: punches above size in service quality.</div>
+        <div class="signal-item"><strong>"Scotland's fleet leader"</strong> — Scottish media (Scotsman, STV Business) frames Ogilvie as the defining fleet business of Scotland. Stirling HQ + family ownership anchors this.</div>
+        <div class="signal-item"><strong>"Orderly succession"</strong> — July 2025 MD transition covered as well-managed, continuity-preserving event. Gordon Stephen "Hall of Fame legend stepping back, not stepping down."</div>
+        <div class="signal-item"><strong>"Pragmatic EV voice"</strong> — Gordon Stephen + Nick Hardy quoted acknowledging EV RV difficulties while framing Ogilvie products (ReLease, MiSalarySacrifice) as solutions.</div>
+        <div class="signal-item" style="grid-column:1/-1"><strong>"Annual award-winner"</strong> — Fleet News features Ogilvie or its people almost every year. Brand synonymous with industry recognition in their tier.</div>
+      </div>
+
+      <h3 style="margin-top:24px">Signal Watch List</h3>
+      <table class="ft-table">
+        <tr><th>Signal</th><th>Probability</th><th>Timeframe</th><th>Impact</th></tr>
+        <tr><td>EV residual value further deterioration</td><td>35–50%</td><td>12–24 months</td><td>Negative if associated with losses; manageable if ReLease narrative pre-positioned</td></tr>
+        <tr><td>M&amp;A announcement (either direction)</td><td>25–40%</td><td>12–24 months</td><td>Ambiguous — premium exit story or independence-lost narrative depending on framing</td></tr>
+        <tr><td>Scottish media vacuum post-Fleet Alliance</td><td>High</td><td>Now</td><td>Positive opportunity — unambiguously upside for Ogilvie</td></tr>
+        <tr><td>Nick Hardy profile elevation</td><td>High</td><td>6–12 months</td><td>Positive if becomes Fleet News commentator; risk if spokesperson gap allows competitor voice</td></tr>
+        <tr><td>Zenith Bridgepoint exit</td><td>Medium-High</td><td>12–18 months</td><td>Triggers consolidation narrative wave spotlighting remaining independents including Ogilvie</td></tr>
+      </table>
+
+      <div class="therefore-block">
+        <strong>Therefore:</strong> The primary media opportunity for Ogilvie is proactive share-of-voice capture, not defensive reputation management. Fleet Alliance's acquisition has created a Scottish media vacuum that Ogilvie is uniquely positioned to fill — Q2 2026 is the activation window.
+      </div>
+      <button class="ask-section-btn" onclick="openChatbot('Based on the Market Sentiment findings for Ogilvie Fleet, what specific media strategy should the leadership team activate this quarter?')">🧠 Ask about this section →</button>
+    </div>
+  </div>
+
+  <!-- STAKEHOLDER MAP -->
+  <div id="s-stakeholders" class="tab-content">
+    <div class="glass-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:20px">
+        <h2>Stakeholder Map</h2>
+        <span class="badge badge-data">DATA</span>
+      </div>
+      <p class="small muted" style="margin-bottom:20px">Sources: Companies House (SC067027, SC029219), Fleet News, Fleet World, Business Motoring, LinkedIn public profiles. All director data verified April 2026.</p>
+
+      <div class="glass-card" style="background:rgba(201,168,76,0.04);border-color:rgba(201,168,76,0.2);margin-bottom:20px">
+        <h3>⚠️ Key Finding: Real Power Sits Above the MD Title</h3>
+        <p style="margin-top:8px;font-size:14px">Nick Hardy became MD on 1 July 2025 — but the decision-making architecture did not change. <strong style="color:var(--ft-gold)">Duncan Ogilvie (sole beneficial owner) + Gordon Stephen (Chairman) + John Watson (34-year Finance Director)</strong> remain the inner circle. Any senior commercial engagement must reach this three-person power tier, not just the title on the org chart.</p>
+      </div>
+
+      <h3>Board Composition — Ogilvie Fleet Limited</h3>
+      <table class="ft-table">
+        <tr><th>Name</th><th>Role</th><th>Appointed</th><th>Power Tier</th></tr>
+        <tr><td><strong>Duncan Henderson Ogilvie</strong></td><td>Director / Beneficial Owner (100%)</td><td>Aug 1990</td><td><span class="badge" style="background:rgba(201,168,76,0.2);color:var(--ft-gold);border:1px solid rgba(201,168,76,0.4)">Tier 1</span></td></tr>
+        <tr><td><strong>Gordon James Stephen</strong></td><td>Director / Chairman (Automotive)</td><td>Aug 1998</td><td><span class="badge" style="background:rgba(201,168,76,0.2);color:var(--ft-gold);border:1px solid rgba(201,168,76,0.4)">Tier 1</span></td></tr>
+        <tr><td><strong>John Findlay Watson</strong></td><td>Director / Group Finance Director / Company Secretary</td><td>Jan 1992</td><td><span class="badge" style="background:rgba(201,168,76,0.2);color:var(--ft-gold);border:1px solid rgba(201,168,76,0.4)">Tier 1</span></td></tr>
+        <tr><td>Nicholas John Hardy</td><td>Managing Director</td><td>Aug 2008 (MD Jul 2025)</td><td><span class="badge badge-assessed">Tier 2</span></td></tr>
+        <tr><td>Jill Stephen</td><td>Operations Director</td><td>Aug 2000</td><td><span class="badge badge-assessed">Tier 2</span></td></tr>
+        <tr><td>Andrew Stewart Baird Stephen</td><td>Technology &amp; Systems Director (AI mandate)</td><td>Aug 2015</td><td><span class="badge badge-assessed">Tier 2</span></td></tr>
+        <tr><td>Ashley Crookes</td><td>Sales &amp; Marketing Director</td><td>Jul 2025</td><td><span class="badge badge-assessed">Tier 2</span></td></tr>
+        <tr><td>Ian Bennett</td><td>Rental Director / ONWRD Integration</td><td>Jun 2022</td><td><span class="badge badge-assessed">Tier 2</span></td></tr>
+      </table>
+
+      <h3 style="margin-top:24px">Governance Structure</h3>
+      <div class="signal-item" style="margin:12px 0;font-family:monospace;font-size:13px;line-height:1.8">
+        Duncan Ogilvie (100% beneficial owner)<br>
+        ├── Willie MacDiarmid (Group Chairman, sole external NED)<br>
+        ├── John Watson (Group Finance Director — 34yr, de facto CFO)<br>
+        ├── Gordon Stephen (Group Board + Automotive Chairman)<br>
+        │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── [Brother] Andy Stephen (Technology &amp; Systems Director)<br>
+        │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── [Likely family] Jill Stephen (Operations Director)<br>
+        └── Nick Hardy (MD + Group Board)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── Ashley Crookes (Sales &amp; Marketing Director)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── Richard Jessop (Director of Sales — North)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── Ian Bennett (Rental Director / ONWRD integration)
+      </div>
+
+      <h3 style="margin-top:24px">Succession Signals</h3>
+      <table class="ft-table">
+        <tr><th>Signal</th><th>Status</th><th>Risk</th></tr>
+        <tr><td>Gordon Stephen: MD → Chairman (Jul 2025)</td><td>✅ Complete — planned transition</td><td>Low — retained all board seats</td></tr>
+        <tr><td>Nick Hardy: S&amp;M Director → MD</td><td>✅ Complete — continuity appointment</td><td>Low — 18 years at Ogilvie</td></tr>
+        <tr><td>John Watson (34+ year Finance Director)</td><td>⚠️ No visible successor identified</td><td><strong style="color:var(--ft-red)">High</strong> — sole CFO at both Fleet and Group level</td></tr>
+        <tr><td>Duncan Ogilvie (third generation owner)</td><td>⚠️ No succession path disclosed</td><td>Medium — family business dynamics</td></tr>
+        <tr><td>Andy Stephen: Technology mandate (Jul 2025)</td><td>🔄 In progress — no tech hires visible</td><td>Medium — aspirational without talent pipeline</td></tr>
+      </table>
+
+      <div class="therefore-block">
+        <strong>Therefore:</strong> Ogilvie Fleet is governed by a tightly controlled family-and-loyalist power structure where meaningful strategic decisions flow through Duncan Ogilvie, Gordon Stephen, and John Watson — Nick Hardy was selected precisely because he will not disrupt the culture; any approach at CEO or board level must account for the fact that the real decision-makers are the founding family and two long-tenure insiders.
+      </div>
+      <button class="ask-section-btn" onclick="openChatbot('Based on the Stakeholder Map for Ogilvie Fleet, who are the most important people to engage for any strategic conversation, and what do I need to know about each of them?')">🧠 Ask about this section →</button>
+    </div>
+  </div>
+
+  <!-- THREE SCENARIOS -->
+  <div id="s-scenarios" class="tab-content">
+    <div class="glass-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:20px">
+        <h2>Three Scenarios: 2026–2029</h2>
+        <span class="badge badge-assessed">ASSESSED</span>
+      </div>
+      <p class="small muted" style="margin-bottom:16px"><strong>Key question:</strong> Can Ogilvie Fleet defend and grow its independent position through the EV transition and sector consolidation, or does structural pressure compress margins and force a strategic exit?</p>
+
+      <div class="scenario-row">
+        <div class="scenario-card bear">
+          <div class="scenario-pct bear">25%</div>
+          <h3 style="color:var(--ft-red);margin-bottom:8px">Bear Case<br><small style="font-weight:400;font-size:13px">"Balance Sheet Squeeze"</small></h3>
+          <p class="small" style="margin-bottom:12px">A second wave of EV residual value deterioration (used EV supply +178% by 2027) collides with a funding cost squeeze. Ogilvie's independently capitalised balance sheet cannot absorb losses the way a bank-backed lessor can.</p>
+          <table class="ft-table">
+            <tr><td class="small">Fleet size</td><td class="small"><strong style="color:var(--ft-red)">18,000–20,000 vehicles</strong></td></tr>
+            <tr><td class="small">EV RV losses (above provision)</td><td class="small"><strong style="color:var(--ft-red)">£18–28M</strong></td></tr>
+            <tr><td class="small">Net assets (compressed)</td><td class="small"><strong style="color:var(--ft-red)">£48–58M</strong></td></tr>
+            <tr><td class="small">Outcome</td><td class="small">Forced sale or external capital event</td></tr>
+          </table>
+        </div>
+        <div class="scenario-card base">
+          <div class="scenario-pct base">55%</div>
+          <h3 style="color:var(--ft-amber);margin-bottom:8px">Base Case<br><small style="font-weight:400;font-size:13px">"Resilient Climber"</small></h3>
+          <p class="small" style="margin-bottom:12px">Organic growth at 5–7% annually. EV residual values stabilise at 35–40%. Salary sacrifice grows to 18–20% of revenue. ONWRD adds short-cycle, lower-risk income. Funding costs ease modestly.</p>
+          <table class="ft-table">
+            <tr><td class="small">Fleet size (2029)</td><td class="small"><strong style="color:var(--ft-amber)">27,000–30,000</strong></td></tr>
+            <tr><td class="small">Turnover (FY2028/29)</td><td class="small"><strong style="color:var(--ft-amber)">£290–310M</strong></td></tr>
+            <tr><td class="small">Net assets</td><td class="small"><strong style="color:var(--ft-amber)">£85–95M</strong></td></tr>
+            <tr><td class="small">FN50 ranking</td><td class="small">11th–13th</td></tr>
+          </table>
+        </div>
+        <div class="scenario-card bull">
+          <div class="scenario-pct bull">20%</div>
+          <h3 style="color:var(--ft-green);margin-bottom:8px">Bull Case<br><small style="font-weight:400;font-size:13px">"Mobility Platform Leader"</small></h3>
+          <p class="small" style="margin-bottom:12px">EV residuals stabilise faster than consensus. SME salary sacrifice penetration accelerates. Ogilvie acquires a smaller lessor, adds 3,000–5,000 vehicles. Becomes acquirer, not target.</p>
+          <table class="ft-table">
+            <tr><td class="small">Fleet size (2029)</td><td class="small"><strong style="color:var(--ft-green)">36,000–40,000</strong></td></tr>
+            <tr><td class="small">Turnover (FY2028/29)</td><td class="small"><strong style="color:var(--ft-green)">£315–360M</strong></td></tr>
+            <tr><td class="small">Enterprise value</td><td class="small"><strong style="color:var(--ft-green)">£180–240M</strong></td></tr>
+            <tr><td class="small">FN50 ranking</td><td class="small">Top 10</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <h3 style="margin-top:24px">8 Observable Signals — Which Scenario Is Playing Out</h3>
+      <table class="ft-table">
+        <tr><th>#</th><th>Signal</th><th>Bear Indicator</th><th>Bull Indicator</th></tr>
+        <tr><td>1</td><td>Used EV market pricing (BVRLA quarterly)</td><td>Further 15%+ RV decline in 2026</td><td>Values stabilise at 35–38%</td></tr>
+        <tr><td>2</td><td>ZEV mandate compliance tracking (SMMT monthly)</td><td>Mandate review/relaxation announced</td><td>Manufacturers hit targets without supply distortion</td></tr>
+        <tr><td>3</td><td>Salary sacrifice market share signals</td><td>BiK rates accelerate; SME adoption stalls</td><td>Ogilvie captures 3–4% national SS share</td></tr>
+        <tr><td>4</td><td>M&amp;A approach received (formal or informal)</td><td>Unsolicited approach at distressed valuation</td><td>Structured process at premium valuation</td></tr>
+        <tr><td>5</td><td>BoE base rate trajectory (quarterly)</td><td>Rate held or rises above 4%</td><td>Cuts to 2.75–3.0% by 2028</td></tr>
+        <tr><td>6</td><td>ONWRD integration performance</td><td>Integration costs exceed acquisition rationale</td><td>Rental revenue contributes £5M+ in 12 months</td></tr>
+        <tr><td>7</td><td>Andy Stephen technology hire announcement</td><td>No tech hires in 12 months</td><td>First data/AI hire within 6 months</td></tr>
+        <tr><td>8</td><td>Zenith Bridgepoint exit timing</td><td>Forced sale at low multiple reshapes sector pricing</td><td>Clean exit at premium triggers Ogilvie valuation uplift</td></tr>
+      </table>
+
+      <h3 style="margin-top:24px">Hedge Strategy</h3>
+      <div class="signal-item" style="margin-bottom:12px">
+        <strong>Against Bear Case:</strong> Re-price EV RV assumptions on the forward book. Increase fee-based revenue (salary sacrifice management, ONWRD rental, fleet advisory) that does not carry asset risk. Establish conservative RV provisioning before the 2027 supply surge.
+      </div>
+      <div class="signal-item">
+        <strong>Preserve Bull Case optionality:</strong> Fund the AI/technology capability now — this is the primary differentiator that separates a "fleet leasing company" from a "mobility platform" in acquirer valuation. Time the M&amp;A conversation for peak business performance (base case trajectory confirms).
+      </div>
+
+      <div class="therefore-block">
+        <strong>Therefore:</strong> Re-price EV residual value assumptions on the forward book now — before the 2027 used-EV supply surge — because Ogilvie's £76M balance sheet without a bank parent cannot absorb bank-backed competitor levels of RV loss without triggering a capital event.
+      </div>
+      <button class="ask-section-btn" onclick="openChatbot('Based on the Three Scenarios for Ogilvie Fleet, what specific steps would confirm which scenario is playing out, and what should I monitor weekly?')">🧠 Ask about this section →</button>
+    </div>
+  </div>
+
+  <!-- REGULATORY PIPELINE -->
+  <div id="s-regulatory" class="tab-content">
+    <div class="glass-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:20px">
+        <h2>Regulatory Pipeline</h2>
+        <span class="badge badge-data">DATA</span>
+      </div>
+
+      <h3>Top 5 Highest-Impact Regulations</h3>
+      <table class="ft-table">
+        <tr><th>Regulation</th><th>Body</th><th>Effective Date</th><th>Impact</th></tr>
+        <tr><td><strong>FCA PS26/3 Motor Finance Redress</strong></td><td>FCA</td><td>Live 31 May 2026</td><td><span class="badge badge-red">HIGH</span> — leasing excluded but operational spillover; funder capital risk</td></tr>
+        <tr><td><strong>ZEV Mandate — 33% cars / 24% vans</strong></td><td>DfT/OZEV</td><td>Calendar 2026</td><td><span class="badge badge-red">HIGH</span> — suppresses used EV RV; tightens ICE supply</td></tr>
+        <tr><td><strong>eVED — 3p/mile for EVs</strong></td><td>HMRC</td><td>April 2028 (target)</td><td><span class="badge badge-amber">HIGH</span> — every lease written today spans 2028; force majeure clause needed NOW</td></tr>
+        <tr><td><strong>HMRC BiK escalation — 4% → 9%</strong></td><td>HMRC</td><td>Apr 2026 → 2029/30</td><td><span class="badge badge-amber">MEDIUM</span> — salary sacrifice economics erode gradually; pricing guides need annual update</td></tr>
+        <tr><td><strong>FCA Consumer Duty enforcement</strong></td><td>FCA</td><td>Q3 2026 thematic review</td><td><span class="badge badge-amber">MEDIUM-HIGH</span> — board-level MI pack required before review</td></tr>
+      </table>
+
+      <h3 style="margin-top:24px">Regulatory Calendar — Q2 2026 to Q1 2027</h3>
+      <div class="signal-item" style="font-family:monospace;font-size:13px;line-height:2">
+        <div style="color:var(--ft-amber)">▶ Q2 2026 (NOW)</div>
+        <div>1 Apr 2026: EV BiK rises to 4% — update all salary sacrifice pricing guides</div>
+        <div>1 Apr 2026: VED Expensive Car Supplement threshold → £50,000 (positive for EV fleet)</div>
+        <div style="color:var(--ft-red)">31 May 2026: FCA complaint handling pause lifted — motor finance DCA complaints go live</div>
+        <div>H1 2026: FCA publishes Consumer Duty B2B exclusion consultation</div>
+        <div style="color:var(--ft-amber)">▶ Q3 2026</div>
+        <div>30 Sep 2026: Lenders confirm Scheme 2 redress quantum to consumers</div>
+        <div style="color:var(--ft-red)">Jul–Sep 2026: FCA thematic review of consumer finance sector</div>
+        <div style="color:var(--ft-amber)">▶ Q4 2026</div>
+        <div>31 Oct 2026: Consumer acceptance deadline for Scheme 2</div>
+        <div>Nov 2026: Scheme 2 redress payments due</div>
+        <div>Q4 2026: FCA final rules on Consumer Duty scope (B2B exclusions)</div>
+        <div style="color:var(--ft-amber)">▶ Q1 2027</div>
+        <div>Jan 2027: Scheme 1 motor finance payments due</div>
+        <div>6 Apr 2027: EV BiK rises to 5%</div>
+        <div>ZEV mandate 2027: 38% cars / 34% vans</div>
+      </div>
+
+      <h3 style="margin-top:24px">Immediate Compliance Actions (Next 90 Days)</h3>
+      <div class="decision-card" style="border-left-color:var(--ft-red)">
+        <div class="decision-title">1. Commission EV RV Stress Test — balance sheet protection</div>
+        <div class="small muted">Model current EV lease book against three RV scenarios: current market, 15% further decline, 25% decline. Identify vintages and contracts with worst exposure.</div>
+      </div>
+      <div class="decision-card" style="border-left-color:var(--ft-red)">
+        <div class="decision-title">2. Establish Consumer Duty Board-Level MI Pack</div>
+        <div class="small muted">FCA Q3 2026 thematic review will request evidence. Board pack must show: fair value assessment, consumer understanding standards, complaint trend analysis. Without it, Ogilvie risks being in first enforcement wave.</div>
+      </div>
+      <div class="decision-card">
+        <div class="decision-title">3. Insert eVED Contingency Clauses into All New Lease Agreements</div>
+        <div class="small muted">eVED consultation closed March 2026; legislation expected. 36–48 month leases written today will span April 2028. Without a regulatory change clause, Ogilvie absorbs the cost. Legal must act now.</div>
+      </div>
+      <div class="decision-card">
+        <div class="decision-title">4. Update Salary Sacrifice Pricing Guides for BiK Change</div>
+        <div class="small muted">BiK moved from 3% to 4% from 6 April 2026. All TCO calculators, customer quote tools, marketing materials must reflect 2026/27 rates with forward schedule to 2029/30.</div>
+      </div>
+      <div class="decision-card">
+        <div class="decision-title">5. Audit Leasing Complaint Handling for FCA Compliance</div>
+        <div class="small muted">DCA complaint pause lifting 31 May 2026. Customer confusion between motor finance and leasing will spike. Triage process must be live before that date.</div>
+      </div>
+
+      <div class="therefore-block">
+        <strong>Therefore:</strong> The single most important regulatory action Ogilvie Fleet's leadership must take in the next 90 days is to commission an urgent residual value stress test AND ensure a board-level Consumer Duty evidence pack is in place before the FCA's Q3 2026 thematic review — because these address the greatest financial risk and the greatest regulatory enforcement risk simultaneously.
+      </div>
+      <button class="ask-section-btn" onclick="openChatbot('Based on the Regulatory Pipeline for Ogilvie Fleet, which of the 17 compliance actions is most urgent and what does a 90-day compliance plan look like?')">🧠 Ask about this section →</button>
+    </div>
+  </div>
+
+  <!-- M&A SIGNALS -->
+  <div id="s-ma" class="tab-content">
+    <div class="glass-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:20px">
+        <h2>M&amp;A Signals</h2>
+        <span class="badge badge-assessed">ASSESSED</span>
+      </div>
+
+      <div class="glass-card" style="background:rgba(239,68,68,0.04);border-color:rgba(239,68,68,0.2);margin-bottom:20px">
+        <h3>Sector Phase: Late-Stage Consolidation</h3>
+        <p style="font-size:14px;margin-top:8px;line-height:1.7">The top tier was structurally reset in 2023: <strong>ALD + LeasePlan → Ayvens</strong> (£4.1bn, 300,000+ vehicles). <strong>Lloyds acquired Tusker</strong> (£300M) → Lloyds Transport, FN50 #1. The broker/independent layer is in active roll-up: <strong>GVG acquired Fleet Alliance</strong> (June 2025), creating a £2.5bn super-broker. Remaining independents of scale: Zenith (Bridgepoint PE, 170,000 vehicles — exit overdue) and <strong>Ogilvie Fleet (25,000 vehicles, family-owned)</strong>. The pressure on this group is intensifying.</p>
+      </div>
+
+      <h3>Acquirer Signal Dashboard</h3>
+      <table class="ft-table">
+        <tr><th>Company</th><th>Role</th><th>Signal</th><th>Probability</th><th>Timeline</th></tr>
+        <tr><td><strong style="color:var(--ft-amber)">Novuna Vehicle Solutions</strong></td><td>Strategic acquirer</td><td>Fastest-growing FN50, acquired BNP heavy truck book 2024, lacks Scottish/SME depth</td><td><strong style="color:var(--ft-amber)">Medium-High</strong></td><td>12–24 months</td></tr>
+        <tr><td>PE (MBO / PE-backed)</td><td>Financial acquirer</td><td>£190bn dry powder; fleet leasing recurring revenue attractive to infrastructure-style funds</td><td>Medium</td><td>12–24 months</td></tr>
+        <tr><td>Ayvens (ALD/LeasePlan)</td><td>Strategic acquirer</td><td>Post-merger integration finishing; UK position sub-optimal vs bank-backed peers</td><td>Low-Medium</td><td>18–36 months</td></tr>
+        <tr><td>Lloyds Transport</td><td>Strategic acquirer</td><td>Just completed Tusker/Lex integration; unlikely to move again soon</td><td>Low</td><td>24–36 months</td></tr>
+        <tr><td>Global Vehicle Group</td><td>Platform acquirer</td><td>Active broker acquirer; Ogilvie's funder/lessor model differs from GVG's broker model</td><td>Low-Medium</td><td>18–36 months</td></tr>
+      </table>
+
+      <h3 style="margin-top:24px">Valuation Range: £200M – £320M</h3>
+      <div class="signals-grid">
+        <div class="signal-item">
+          <h4>Primary Comparable</h4>
+          <p class="small">Tusker acquisition: £300M for ~23,000 vehicles (Lloyds Banking Group, 2023). Ogilvie has 25,000 vehicles + stronger SME retention + proprietary tech (MiSalarySacrifice) + Scotland brand dominance. Tusker premium is a floor, not ceiling.</p>
+        </div>
+        <div class="signal-item">
+          <h4>EBITDA Multiple Context</h4>
+          <p class="small">UK fleet leasing transactions: 7–11× EBITDA. EV RV crisis has compressed sector profitability. Ogilvie's £76M net assets + £49M cash provides tangible asset support. ECI/Tusker benchmark: 6.2× PE return. This is known to every family-owned fleet business in the sector.</p>
+        </div>
+        <div class="signal-item">
+          <h4>Upward Valuation Drivers</h4>
+          <p class="small">98% retention (exceptional — acquirer pays for customer stickiness). MiSalarySacrifice platform (fee income, no RV risk). Scotland dominance (geographic IP). 700 SME clients (acquirer cannot replicate organically). Happy Drivers app + ReLease product suite.</p>
+        </div>
+        <div class="signal-item">
+          <h4>Downward Pressure</h4>
+          <p class="small">Sector-wide EV RV crisis (FN50 profits fell 91% in 2025). No bank parent for balance sheet support. Family ownership creates negotiation complexity. ONWRD integration adds execution risk premium. Limited public financial disclosure.</p>
+        </div>
+      </div>
+
+      <h3 style="margin-top:24px">Offensive M&amp;A — Ogilvie as Acquirer</h3>
+      <div class="signal-item">
+        <p class="small"><strong>ONWRD (Dec 2025)</strong> signals first-ever acquisition appetite. At £247M revenue, Ogilvie could acquire smaller independent lessors (5,000–10,000 vehicles) that are under EV balance sheet pressure. Target profile: well-retained SME client base, no proprietary tech, owner-operated. Geography: Northern England, Midlands (to accelerate south expansion). This is the alternative to being acquired — become the acquirer in the mid-tier consolidation wave below the FN50 top tier.</p>
+      </div>
+
+      <div class="therefore-block">
+        <strong>Therefore:</strong> The CEO's priority over the next 12 months should be to proactively shape a potential exit or partnership conversation — because sector profitability pressure, the enclosure of the top tier, and the limits of family-funded growth mean the question is not <em>if</em> but <em>when and on whose terms</em>.
+      </div>
+      <button class="ask-section-btn" onclick="openChatbot('Based on the M&A Signals analysis for Ogilvie Fleet, if I were the CEO considering my options, what would a proactive M&A strategy look like versus a defence strategy?')">🧠 Ask about this section →</button>
+    </div>
+  </div>
+
+  <!-- EMPLOYEE INTELLIGENCE -->
+  <div id="s-employee" class="tab-content">
+    <div class="glass-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:20px">
+        <h2>Employee Intelligence</h2>
+        <span class="badge badge-data">DATA</span>
+      </div>
+
+      <h3>Culture Health — Exceptional by Any Benchmark</h3>
+      <table class="ft-table">
+        <tr><th>Metric</th><th>Score / Status</th><th>Context</th></tr>
+        <tr><td>Best Companies Accreditation</td><td><strong style="color:var(--ft-green)">2-Star "Outstanding"</strong></td><td>6th consecutive year — verified, voluntary participation</td></tr>
+        <tr><td>Employee Engagement Score</td><td><strong>719 / 1,000</strong></td><td>95% staff participation rate — not a passive survey</td></tr>
+        <tr><td>UK Mid-Sized Company Ranking</td><td><strong>#45</strong></td><td>Best Companies 2025</td></tr>
+        <tr><td>Business Services Ranking</td><td><strong>#5</strong></td><td>Best Companies 2025</td></tr>
+        <tr><td>Scotland Ranking</td><td><strong>#12</strong></td><td>Best Companies 2025</td></tr>
+        <tr><td>Wellbeing Score</td><td><strong>88%</strong></td><td>AXA Healthcare, 24/7 counselling, holistic programme</td></tr>
+        <tr><td>Leadership Confidence</td><td><strong>76%</strong></td><td>"Open-door policy"; executives treat staff "as an equal"</td></tr>
+        <tr><td>Revenue Per Employee</td><td><strong>~£1.7M</strong></td><td>Very strong for services business — lean and efficient model</td></tr>
+      </table>
+
+      <h3 style="margin-top:24px">Strategic Hiring Map (2023–2026)</h3>
+      <table class="ft-table">
+        <tr><th>Function</th><th>Trend</th><th>Strategic Signal</th></tr>
+        <tr><td>Salary Sacrifice / MiSalarySacrifice</td><td><span class="badge badge-green">Team doubled</span></td><td>EV salary sacrifice is #1 growth vector; heavy specialist investment</td></tr>
+        <tr><td>Daily Rental / Flexible Mobility</td><td><span class="badge badge-green">+40% headcount</span></td><td>Mobility services strategy underway; rental bridges to full mobility management</td></tr>
+        <tr><td>South of England Sales</td><td><span class="badge badge-blue">6 hires since 2015</span></td><td>Deliberate geographic expansion from Scotland/Midlands base</td></tr>
+        <tr><td>Technology / Systems (Andy Stephen)</td><td><span class="badge badge-assessed">New C-level function</span></td><td>Technology elevated to board for first time; AI integration a formal mandate</td></tr>
+        <tr><td>AI / Data / Engineering (below Andy Stephen)</td><td><span class="badge badge-red">Zero visible hires</span></td><td><strong>Critical gap</strong> — mandate is aspirational, not resourced</td></tr>
+      </table>
+
+      <h3 style="margin-top:24px">EV &amp; Technology Capability — Stronger Than Peers</h3>
+      <div class="signals-grid">
+        <div class="signal-item" style="border-color:rgba(34,197,94,0.3)">
+          <h4 style="color:var(--ft-green)">✅ Strengths</h4>
+          <ul style="font-size:13px;color:var(--ft-text-muted);padding-left:16px;line-height:2">
+            <li>MiNextEV — proprietary EV database (real-world range, BIK data, e-LCV coverage)</li>
+            <li>Happy Drivers — award-winning app (EV charger locator, maintenance, booking)</li>
+            <li>MiSalarySacrifice — dedicated division, specialist hires, fastest-growing line</li>
+            <li>ReLease — first-mover in used EV leasing segment (launched 2025)</li>
+            <li>~50% of forward car orders pure EV</li>
+            <li>Employee scheme restricted to PHEVs/BEVs — walks the talk</li>
+          </ul>
+        </div>
+        <div class="signal-item" style="border-color:rgba(239,68,68,0.3)">
+          <h4 style="color:var(--ft-red)">⚠️ Critical Gap</h4>
+          <p class="small" style="line-height:1.7">No visible software engineers, data analysts, or product managers being hired externally. AI integration is Andy Stephen's explicit board mandate (July 2025) — but 9 months on, there is zero evidence of technology hires below him. The AI mandate is stated intent, not delivered capability. This is the single most significant internal capability gap.</p>
+          <p class="small" style="color:var(--ft-red);margin-top:8px"><strong>The risk:</strong> A well-resourced competitor or acquirer can permanently outpace Ogilvie on technology before the company builds its own capability.</p>
+        </div>
+      </div>
+
+      <h3 style="margin-top:24px">ONWRD Acquisition — People Signal</h3>
+      <div class="signal-item">
+        <p class="small">ONWRD was acquired December 2025 — Ogilvie's first-ever M&amp;A move. Customer-facing teams were retained; back-office integration is in progress. This adds undisclosed headcount (ONWRD was a ~16-year-old specialist business with established teams). The integration is competing for management bandwidth simultaneously with the MD transition and technology mandate. This is the highest-execution-risk combination in the company's recent history.</p>
+      </div>
+
+      <div class="therefore-block">
+        <strong>Therefore:</strong> Ogilvie Fleet is culturally stable and growing, but is mid-transition on technology and leadership simultaneously — making Q3 2025–Q2 2026 their highest-execution-risk window in recent history, with AI capability aspirations currently ahead of the visible talent to deliver them.
+      </div>
+      <button class="ask-section-btn" onclick="openChatbot('Based on the Employee Intelligence for Ogilvie Fleet, what does the culture and talent picture mean for execution risk in the next 12 months?')">🧠 Ask about this section →</button>
+    </div>
+  </div>
+
+  <!-- COMPETITIVE INTEL -->
+  <div id="s-competitive" class="tab-content">
+    <div class="glass-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:20px">
+        <h2>Competitive Intelligence</h2>
+        <span class="badge badge-assessed">ASSESSED</span>
+      </div>
+
+      <h3>UK Fleet Leasing Landscape — Ogilvie's Position</h3>
+      <table class="ft-table">
+        <tr><th>Company</th><th>Scale</th><th>Backing</th><th>Ogilvie Relationship</th></tr>
+        <tr><td><strong>Lloyds Transport</strong> (Lex + Tusker)</td><td>200,000+ vehicles, FN50 #1</td><td>Lloyds Banking Group</td><td>Different segment — no direct competition. Bank balance sheet provides EV RV buffer Ogilvie lacks.</td></tr>
+        <tr><td><strong>Ayvens</strong> (ALD/LeasePlan)</td><td>300,000+ vehicles UK</td><td>BNP Paribas (parent of Arval)</td><td>Tier above Ogilvie. Integration of two mega-brands ongoing. Post-merger admin creates service quality opportunity for agile independents.</td></tr>
+        <tr><td><strong>Arval UK</strong></td><td>~130,000 vehicles, FN50 top 5</td><td>BNP Paribas</td><td>Overlap in corporate fleet — Ogilvie's service quality narrative positions directly against Arval's institutional scale.</td></tr>
+        <tr><td><strong style="color:var(--ft-amber)">Novuna Vehicle Solutions</strong></td><td>~110,000 vehicles, FN50 #6</td><td>Hitachi / MUFG</td><td><strong>Most likely acquirer.</strong> Fastest-growing FN50 player. Lacks Scottish presence and SME depth that Ogilvie owns outright.</td></tr>
+        <tr><td><strong>Zenith Vehicle Contracts</strong></td><td>~170,000 vehicles, FN50 ~5th</td><td>Bridgepoint PE</td><td>PE exit overdue — when it happens, will reshape competitor landscape and spotlight remaining independents including Ogilvie.</td></tr>
+        <tr><td><strong>Global Vehicle Group</strong></td><td>70,000+ brokered, FN50 broker</td><td>Independent (acquisitive)</td><td>Super-broker model differs from Ogilvie's funder/lessor model. GVG's Fleet Alliance acquisition removes Ogilvie's only Scottish peer.</td></tr>
+      </table>
+
+      <h3 style="margin-top:24px">Competitive Advantages (Defensible)</h3>
+      <div class="signals-grid">
+        <div class="signal-item" style="border-color:rgba(34,197,94,0.3)">
+          <h4 style="color:var(--ft-green)">98% Customer Retention</h4>
+          <p class="small">This is not a marketing claim — it's a structural moat. Fleet contracts are 3–4 year commitments. A customer who renews is locked into the relationship for years. No bank-backed competitor at Ogilvie's service tier has published comparable retention data. This is Ogilvie's single most valuable commercial asset.</p>
+        </div>
+        <div class="signal-item" style="border-color:rgba(34,197,94,0.3)">
+          <h4 style="color:var(--ft-green)">Scotland Brand Dominance</h4>
+          <p class="small">Fleet Alliance (only comparable Scottish independent) absorbed into GVG. Ogilvie is now Scotland's only remaining major independent fleet lessor of scale. Geographic moat is stronger today than 12 months ago. Scottish corporate customers have historically preferred Scottish suppliers — this is embedded, not aspirational.</p>
+        </div>
+        <div class="signal-item" style="border-color:rgba(34,197,94,0.3)">
+          <h4 style="color:var(--ft-green)">MiSalarySacrifice Platform</h4>
+          <p class="small">Proprietary salary sacrifice platform with dedicated team (doubled in size). This is fee income with no residual value risk — exactly the revenue model that withstands EV market volatility. Salary sacrifice grew to 11.9% of the UK leasing market in 2025. Ogilvie is early in capturing its share.</p>
+        </div>
+        <div class="signal-item" style="border-color:rgba(239,68,68,0.3)">
+          <h4 style="color:var(--ft-red)">Competitive Vulnerability: Balance Sheet</h4>
+          <p class="small">Lloyds Transport, Ayvens, Arval, and Novuna all have bank or institutional parent backing. In the EV RV crisis, this means they can absorb losses that Ogilvie cannot. A sustained second wave of EV value deterioration would compress Ogilvie's net assets while bank-backed competitors trade through it — and emerge ready to acquire distressed independents. This is the structural vulnerability that makes the M&amp;A decision urgent.</p>
+        </div>
+      </div>
+
+      <div class="therefore-block">
+        <strong>Therefore:</strong> Ogilvie Fleet holds a defensible SME moat (98% retention, Scotland dominance, salary sacrifice platform) in a market that is consolidating at scale above it — the competitive window to build technology differentiation is 18–24 months before the gap between institutional balance sheets and Ogilvie's independent one becomes structurally decisive.
+      </div>
+      <button class="ask-section-btn" onclick="openChatbot('Based on the Competitive Intelligence for Ogilvie Fleet, how would I position the business against Novuna Vehicle Solutions specifically?')">🧠 Ask about this section →</button>
+    </div>
+  </div>
+
+  <!-- 90-DAY DECISIONS (DETAIL) -->
+  <div id="s-decisions" class="tab-content">
+    <div class="glass-card">
+      <h2>90-Day Decision List — Full Detail</h2>
+      <span class="badge badge-assessed" style="margin-bottom:20px;display:inline-block">ASSESSED</span>
+      <p class="small muted" style="margin-bottom:24px">These are decisions, not recommendations. Each requires a choice. Each is enabled by intelligence gathered in this report. The decision deadline is end of Q2 2026.</p>
+
+      <div class="decision-card" style="border-left-color:var(--ft-red);margin-bottom:16px">
+        <div style="font-size:11px;color:var(--ft-red);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Decision 1 — Financial</div>
+        <div class="decision-title" style="font-size:17px;margin-bottom:12px">Commission an EV Residual Value Stress Test of the Forward Book</div>
+        <div class="decision-meta">
+          <div class="decision-row"><span class="decision-row-label">Why now:</span><span class="decision-row-val">Used EV supply forecast +178% by 2027. Bear case exposure: £18–28M above provision on £76M net assets. FCA Q3 2026 thematic review will scrutinise provisioning adequacy. If a second RV wave hits without a prepared board position, the response will be reactive and costly.</span></div>
+          <div class="decision-row"><span class="decision-row-label">Who owns it:</span><span class="decision-row-val">John Watson (Group Finance Director) + Nick Hardy (MD)</span></div>
+          <div class="decision-row"><span class="decision-row-label">Timeline:</span><span class="decision-row-val">Commission within 2 weeks. Results to board by end June 2026.</span></div>
+          <div class="decision-row"><span class="decision-row-label">Decision:</span><span class="decision-row-val">Proceed with independent stress test / or confirm adequate provisioning exists and document it</span></div>
+        </div>
+      </div>
+
+      <div class="decision-card" style="border-left-color:var(--ft-red);margin-bottom:16px">
+        <div style="font-size:11px;color:var(--ft-red);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Decision 2 — Regulatory</div>
+        <div class="decision-title" style="font-size:17px;margin-bottom:12px">Establish FCA Consumer Duty Board Evidence Pack Before 31 May 2026</div>
+        <div class="decision-meta">
+          <div class="decision-row"><span class="decision-row-label">Why now:</span><span class="decision-row-val">FCA PS26/3 complaint pause lifts 31 May. Q3 2026 thematic review confirmed. Board-level Consumer Duty MI is a regulatory expectation — not optional. Companies without it are the first enforcement examples.</span></div>
+          <div class="decision-row"><span class="decision-row-label">Who owns it:</span><span class="decision-row-val">Ashley Crookes (S&amp;M Director) + Compliance function</span></div>
+          <div class="decision-row"><span class="decision-row-label">Timeline:</span><span class="decision-row-val">Pack to board by 15 May 2026 — 2 weeks before complaint handling goes live.</span></div>
+          <div class="decision-row"><span class="decision-row-label">Decision:</span><span class="decision-row-val">Build pack internally / engage external compliance advisory firm</span></div>
+        </div>
+      </div>
+
+      <div class="decision-card" style="border-left-color:var(--ft-gold);margin-bottom:16px">
+        <div style="font-size:11px;color:var(--ft-gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Decision 3 — Strategic</div>
+        <div class="decision-title" style="font-size:17px;margin-bottom:12px">Define the M&amp;A Strategic Position: Sell / Partner / Resist + Fund</div>
+        <div class="decision-meta">
+          <div class="decision-row"><span class="decision-row-label">Why now:</span><span class="decision-row-val">Novuna actively acquiring. Zenith PE exit will reshape the landscape. The window to negotiate on own terms is open now, not in 18 months. A buyer who sets the terms will time their approach to Ogilvie's weakest moment — don't let that happen.</span></div>
+          <div class="decision-row"><span class="decision-row-label">Who owns it:</span><span class="decision-row-val">Duncan Ogilvie (sole beneficial owner) — this is a family decision first</span></div>
+          <div class="decision-row"><span class="decision-row-label">Timeline:</span><span class="decision-row-val">Family alignment required by end of Q2 2026. Board position paper by July 2026.</span></div>
+          <div class="decision-row"><span class="decision-row-label">Decision:</span><span class="decision-row-val">Sell (structured process, adviser mandate) / Partner (minority PE, growth capital) / Resist (define what independent success looks like with funded capital plan)</span></div>
+        </div>
+      </div>
+
+      <div class="decision-card" style="border-left-color:var(--ft-blue);margin-bottom:16px">
+        <div style="font-size:11px;color:var(--ft-blue);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Decision 4 — Capability</div>
+        <div class="decision-title" style="font-size:17px;margin-bottom:12px">Make the First AI / Data Technology Hire Below Andy Stephen</div>
+        <div class="decision-meta">
+          <div class="decision-row"><span class="decision-row-label">Why now:</span><span class="decision-row-val">The Technology &amp; Systems Director mandate is 9 months old. Zero visible hires. ONWRD integration is competing for Andy Stephen's bandwidth. The longer the hire is delayed, the longer the mandate stays aspirational. A well-resourced competitor can permanently outpace Ogilvie during this gap.</span></div>
+          <div class="decision-row"><span class="decision-row-label">Who owns it:</span><span class="decision-row-val">Andy Stephen (Technology &amp; Systems Director)</span></div>
+          <div class="decision-row"><span class="decision-row-label">Timeline:</span><span class="decision-row-val">Role scoped and advertised by May 2026. Hired by August 2026.</span></div>
+          <div class="decision-row"><span class="decision-row-label">Decision:</span><span class="decision-row-val">Hire a Head of Data/Technology internally from fleet sector / externally from tech sector / contract CTO for 6 months</span></div>
+        </div>
+      </div>
+
+      <div class="decision-card" style="border-left-color:var(--ft-green);margin-bottom:16px">
+        <div style="font-size:11px;color:var(--ft-green);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Decision 5 — Communications</div>
+        <div class="decision-title" style="font-size:17px;margin-bottom:12px">Activate Scottish Media + Share-of-Voice Strategy in Q2 2026</div>
+        <div class="decision-meta">
+          <div class="decision-row"><span class="decision-row-label">Why now:</span><span class="decision-row-val">Fleet Alliance absorbed into GVG (English HQ). Scotland's only remaining major independent fleet lessor. Q2 2026 awards cycle is the activation window. Nick Hardy needs a Fleet News profile. The vacuum exists today — not next quarter.</span></div>
+          <div class="decision-row"><span class="decision-row-label">Who owns it:</span><span class="decision-row-val">Ashley Crookes (Sales &amp; Marketing Director) + Nick Hardy (MD, public face)</span></div>
+          <div class="decision-row"><span class="decision-row-label">Timeline:</span><span class="decision-row-val">Media strategy drafted by May 2026. First Fleet News feature interview with Hardy by June 2026.</span></div>
+          <div class="decision-row"><span class="decision-row-label">Decision:</span><span class="decision-row-val">In-house communications strategy / Appoint PR agency with trade fleet media experience</span></div>
+        </div>
+      </div>
+
+      <button class="ask-section-btn" onclick="openChatbot('Based on the 90-Day Decision List for Ogilvie Fleet, if I could only focus on two of these five decisions this month, which two would have the most impact and why?')">🧠 Ask your Intelligence Advisor →</button>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     TAB 2: MEETING INTELLIGENCE
+════════════════════════════════════════════════════════════ -->
+<section id="level-meeting" class="level">
+  <div class="placeholder-card">
+    <div style="font-size:48px;margin-bottom:16px">🤝</div>
+    <h3>Meeting Intelligence</h3>
+    <p>Provide meeting details to generate a complete intelligence brief — attendee profiles, smart questions, decision support, and context from the full CEO Strategic analysis.</p>
+    <p style="margin-top:8px">Required: Meeting purpose (Q9), attendee names and roles (Q10), your objective (Q11), and optionally your organisation (Q12).</p>
+    <div style="margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <button onclick="openChatbot('I need to activate Meeting Intelligence for a meeting with Ogilvie Fleet. My meeting purpose is: [enter purpose]. Attendees: [enter names and roles]. My objective: [enter objective]. Please generate a full meeting brief.')" style="padding:12px 24px;background:linear-gradient(135deg,#c9a84c,#d4af37);color:#0a0e17;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer">🧠 Generate Meeting Brief via Intelligence Advisor →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     TAB 3: WEB INTELLIGENCE
+════════════════════════════════════════════════════════════ -->
+<section id="level-web" class="level">
+
+  <!-- Strategic Context Header -->
+  <div class="strategic-header">
+    Ogilvie Fleet has built the UK's leading independent fleet leasing brand through 20+ awards, 25,000 vehicles under management, and a 46-year track record of counter-cyclical growth. The Web Intelligence analysis answers whether ogilvie-fleet.co.uk communicates that market position — or whether a competitor, acquirer, or potential client arriving at the site would form a different impression. This matters most for <strong>warm referrals</strong> (the primary new business channel for a 98%-retention business) who arrive at the site to verify what they've been told before picking up the phone.
+  </div>
+
+  <!-- Value Statement (Type C) -->
+  <div class="value-statement" style="margin-bottom:24px">
+    <div class="value-number">53/100</div>
+    <div class="value-label"><strong>Web Presence Score: 53/100 (AMBER)</strong><br>Brand Clarity: 44 &nbsp;|&nbsp; Search Visibility: 52 &nbsp;|&nbsp; Competitive Position: 55 &nbsp;|&nbsp; Design Quality: 62 &nbsp;|&nbsp; Growth Readiness: 48<br><br>The site communicates approximately <strong>35% of Ogilvie Fleet's actual market position</strong>. The company is objectively a premium, differentiated, market-leading independent — but the website communicates "an established fleet company that wins awards." The most valuable undeployed asset: the 98% retention rate is not a hero stat. Novuna Vehicle Solutions, with fewer vehicles than Ogilvie, presents a more digitally credible brand on first impression.</div>
+  </div>
+
+  <!-- Sub-tab Navigation -->
+  <div class="sub-tabs-nav">
+    <button class="active" onclick="switchSubTab('web','w-search',this)">Search</button>
+    <button onclick="switchSubTab('web','w-design',this)">Design</button>
+    <button onclick="switchSubTab('web','w-brand',this)">Brand</button>
+    <button onclick="switchSubTab('web','w-compete',this)">Compete</button>
+    <button onclick="switchSubTab('web','w-growth',this)">Growth</button>
+  </div>
+
+  <!-- SEARCH -->
+  <div id="w-search" class="tab-content active">
+    <div class="glass-card">
+      <h2>Search Visibility <span class="badge badge-assessed" style="margin-left:8px">ASSESSED</span></h2>
+      <p class="small muted" style="margin-bottom:20px">How effectively does ogilvie-fleet.co.uk rank for the queries that matter — branded searches, sector terms, and increasingly AI-generated answers to "best fleet leasing" queries.</p>
+
+      <h3>Credibility Gap — Type C Framing</h3>
+      <div class="signals-grid" style="margin-bottom:20px">
+        <div class="signal-item" style="border-color:rgba(34,197,94,0.3)">
+          <h4 style="color:var(--ft-green)">✅ What Works</h4>
+          <ul style="font-size:13px;color:var(--ft-text-muted);padding-left:16px;line-height:2">
+            <li>Strong branded search: "ogilvie fleet" surfaces as top organic result</li>
+            <li>Appears in "UK independent fleet leasing" and "fleet leasing scotland" — meaningful geographic traction</li>
+            <li>Awards page exists at /fleet-manager-services/award-winning/our-record/ and is indexed</li>
+            <li>BVRLA membership + consistent Fleet News coverage creates authoritative backlink profile</li>
+          </ul>
+        </div>
+        <div class="signal-item" style="border-color:rgba(239,68,68,0.3)">
+          <h4 style="color:var(--ft-red)">⚠️ Critical Technical Finding</h4>
+          <ul style="font-size:13px;color:var(--ft-text-muted);padding-left:16px;line-height:2">
+            <li><strong>Site built on Gatsby (React SSR/SSG)</strong> — key pages return CSS/JS framework code rather than indexable content for basic crawlers</li>
+            <li>Awards, stats, and differentiators may not be reliably in the indexed corpus for search or AI scrapers</li>
+            <li><strong>Confirmed absent from AI-generated answers</strong> for "best UK independent fleet leasing companies" — Zenith, Fleet Alliance, SG Fleet surface instead</li>
+            <li>Salary sacrifice EV queries ("EV salary sacrifice UK") dominated by Tusker, Octopus EV, Electric Car Scheme — Ogilvie's MiSalarySacrifice product invisible at top of funnel</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3>AI Search Discoverability (GEO) — Confirmed Gap</h3>
+      <div class="signal-item">
+        <p class="small"><strong>Tested query: "best UK independent fleet leasing companies"</strong><br>AI Overview and LLM results surface: Zenith (166,000 vehicles), Fleet Alliance (now GVG), SG Fleet, and Arval. <strong>Ogilvie Fleet — FN50 #14, 25,000 vehicles, one of the UK's oldest and largest independents — does not appear.</strong> As AI Overviews capture an increasing share of search discovery (44% of users per McKinsey), this absence compounds with each passing month. The structured content that would train AI systems to cite Ogilvie as the authoritative independent fleet leasing voice does not currently exist on the site in crawler-accessible form.</p>
+        <p class="small" style="margin-top:8px;color:var(--ft-amber)"><strong>Priority action:</strong> Convert key credentials (FN50 rank, retention rate, award wins, vehicle count) to static HTML content with structured data markup. Publish a dedicated "Why Independent Fleet Leasing?" article optimised for GEO that explicitly mentions Ogilvie's differentiators in plain text — not just JavaScript-rendered components.</p>
+      </div>
+
+      <div class="therefore-block">
+        <strong>Therefore:</strong> The highest-priority search action is not generic SEO — it is structured AI/GEO optimisation that ensures Ogilvie appears in AI-generated answers for the specific queries that warm referrals use to verify the recommendation they've received.
+      </div>
+      <button class="ask-section-btn" onclick="openChatbot('Based on the Web Intelligence findings for Ogilvie Fleet, what are the three most important actions to improve how the website communicates the company\'s market position?')">🧠 Ask about this section →</button>
+    </div>
+  </div>
+
+  <!-- DESIGN -->
+  <div id="w-design" class="tab-content">
+    <div class="glass-card">
+      <h2>Design Quality <span class="badge badge-assessed" style="margin-left:8px">ASSESSED</span></h2>
+      <div class="signals-grid">
+        <div class="signal-item" style="border-color:rgba(34,197,94,0.3)">
+          <h4 style="color:var(--ft-green)">✅ Strengths</h4>
+          <p class="small">Modern framework (React + Material-UI). ImageKit CDN for image optimisation. Clean navigation structure. Animate.css for smooth transitions. Mobile-responsive. Loads quickly on desktop. Award win news items presented clearly.</p>
+        </div>
+        <div class="signal-item" style="border-color:rgba(245,158,11,0.3)">
+          <h4 style="color:var(--ft-amber)">Areas to Improve</h4>
+          <p class="small">Visual hierarchy does not lead with the strongest signals (25,000 vehicles, 20+ awards, 98% retention). Homepage hero does not immediately communicate market leadership. Design quality is functional but does not reflect the quality of the service or justify the £247M revenue. Competitors at different scale levels may have more visually compelling sites.</p>
+        </div>
+      </div>
+      <div class="therefore-block">
+        <strong>Therefore:</strong> Design quality is adequate but not impressive — it does not create a "wow" moment that matches the quality signals in the business. For a Type C brochure site that exists to confirm credibility, design needs to signal authority immediately, not just function adequately.
+      </div>
+      <button class="ask-section-btn" onclick="openChatbot('Based on the Web Intelligence for Ogilvie Fleet, what would a redesign of the homepage hero section look like to maximise credibility signals?')">🧠 Ask about this section →</button>
+    </div>
+  </div>
+
+  <!-- BRAND -->
+  <div id="w-brand" class="tab-content">
+    <div class="glass-card">
+      <h2>Brand Clarity <span class="badge badge-assessed" style="margin-left:8px">ASSESSED</span></h2>
+      <div class="signal-item" style="margin-bottom:16px">
+        <h4>The Credibility Gap in Detail</h4>
+        <p class="small">Ogilvie Fleet's brand in the market — as documented in the Media Sentiment and Stakeholder intelligence — is substantially stronger than the brand on the website. The trade press frames Ogilvie as "Scotland's defining fleet business," "best-in-class independent," and "award-winning every year." The website communicates a professional, capable fleet company. It does not communicate the market position that justifies those trade press frames. This gap is the credibility gap — and it matters most at the moment a warm referral is deciding whether to call.</p>
+      </div>
+      <div class="signals-grid">
+        <div class="signal-item" style="border-color:rgba(201,168,76,0.3)">
+          <h4 style="color:var(--ft-gold)">#1 Undeployed Asset: 98% Retention Rate</h4>
+          <p class="small" style="margin-bottom:8px">This number — if placed above the fold as a hero stat — answers the primary due diligence question for any fleet manager: <em>"are existing customers happy?"</em> It is independently reported by Fleet News. It differentiates Ogilvie from every bank-owned operator whose clients are captive by contract rather than preference. It is <strong>not prominent on the homepage.</strong></p>
+          <ul style="font-size:13px;color:var(--ft-text-muted);padding-left:16px;line-height:2">
+            <li>Gordon Stephen — Fleet News Hall of Fame (2021) — not in leadership bio</li>
+            <li>6× Best Companies "Outstanding" — not in homepage hero zone</li>
+            <li>FN50 #14 — not surfaced (Novuna leads with fleet size prominently)</li>
+            <li>Investors in People Platinum (top 1% UK employers) — not visible</li>
+            <li>25,000 vehicles managed (larger than Novuna) — not a hero stat</li>
+          </ul>
+        </div>
+        <div class="signal-item" style="border-color:rgba(59,130,246,0.3)">
+          <h4 style="color:var(--ft-blue)">Priority Brand Actions</h4>
+          <ul style="font-size:13px;color:var(--ft-text-muted);padding-left:16px;line-height:2">
+            <li>Add a dedicated Awards &amp; Recognition page with structured data</li>
+            <li>Update homepage hero to lead with market position numbers (25,000 vehicles, 20+ awards, 98% retention)</li>
+            <li>Add Fleet News Hall of Fame reference to leadership bios</li>
+            <li>Add FN50 #14 ranking prominently — it is a data point competitors cannot dispute</li>
+            <li>Create "Why Independent?" content — the bank-backed vs independent comparison Ogilvie wins</li>
+          </ul>
+        </div>
+      </div>
+      <div class="therefore-block">
+        <strong>Therefore:</strong> The single highest-ROI web action for a Type C brochure site is to surface existing credibility data that the company already has but has not placed where it can do work — the Hall of Fame reference, the FN50 ranking, the Best Companies score, the retention rate. These are free to add and immediately close the credibility gap.
+      </div>
+      <button class="ask-section-btn" onclick="openChatbot('Based on the Brand Clarity findings for Ogilvie Fleet, what should the homepage hero section say to immediately communicate the company\'s market position?')">🧠 Ask about this section →</button>
+    </div>
+  </div>
+
+  <!-- COMPETE -->
+  <div id="w-compete" class="tab-content">
+    <div class="glass-card">
+      <h2>Competitive Web Position <span class="badge badge-assessed" style="margin-left:8px">ASSESSED</span></h2>
+      <p class="small muted" style="margin-bottom:16px">How does ogilvie-fleet.co.uk compare to Novuna, Arval, and Zenith — and what does this mean for a warm referral comparison-checking before they call?</p>
+      <div class="signal-item" style="margin-bottom:16px">
+        <p class="small">For a Type C brochure site, the competitive web comparison is about one question: <strong>when a prospect who has been recommended to Ogilvie looks at Ogilvie and a competitor side-by-side online, do they feel more or less confident about Ogilvie?</strong> At the current state, Novuna's website communicates scale and modernity that could cause a warm referral to question the comparison. Ogilvie's genuine advantages (independence, 98% retention, service quality, Scotland brand) are not clearly communicated enough to answer this comparison instinctively.</p>
+      </div>
+      <h3>Priority Actions — Type C Competitive Position</h3>
+      <div class="decision-card">
+        <div class="decision-title">1. Build "Why Ogilvie?" vs bank-backed comparison content</div>
+        <div class="small muted">The independence narrative is Ogilvie's strongest competitive differentiator. A dedicated page or section comparing independent vs institutional fleet leasing — service agility, account management, decision speed, no cross-sell pressure — would directly address the comparison question warm referrals are asking.</div>
+      </div>
+      <div class="decision-card">
+        <div class="decision-title">2. Add case studies with named clients and measurable outcomes</div>
+        <div class="small muted">Retention rate claims are strengthened by specific proof. A case study library with named fleet sizes, challenges, and outcomes would provide the verification content that converts referral confidence into a phone call.</div>
+      </div>
+      <div class="decision-card">
+        <div class="decision-title">3. Salary sacrifice dedicated landing page</div>
+        <div class="small muted">MiSalarySacrifice is the highest-growth product. A dedicated, SEO-optimised landing page (not just a section in the services page) would capture salary sacrifice searches and provide a direct comparison-point against salary sacrifice specialists.</div>
+      </div>
+      <div class="therefore-block">
+        <strong>Therefore:</strong> The competitive web gap is not a design problem — it is a content problem. The intelligence, proof points, and differentiation that would win a comparison-check are available; they are simply not yet structured as web content.
+      </div>
+      <button class="ask-section-btn" onclick="openChatbot('Based on the Competitive Web Position for Ogilvie Fleet, what does a prospect see when they compare Ogilvie to Novuna online, and how do we close that gap?')">🧠 Ask about this section →</button>
+    </div>
+  </div>
+
+  <!-- GROWTH -->
+  <div id="w-growth" class="tab-content">
+    <div class="glass-card">
+      <h2>Growth Readiness <span class="badge badge-assessed" style="margin-left:8px">ASSESSED</span> <span class="small muted">(5% weight — Type C)</span></h2>
+      <p class="small muted" style="margin-bottom:16px">De-weighted for brochure sites. Ogilvie's growth engine is referral and relationship — not website-driven lead generation. However, the website can support growth at the verification stage.</p>
+      <div class="signal-item">
+        <h4>Growth Website Priority (Type C)</h4>
+        <p class="small">For a business with 98% retention and a referral-dominant growth model, the website's job is not to generate leads — it is to not lose them once they arrive. Every warm referral that arrives at the site and leaves unimpressed is a conversion failure that the retention model has already paid for. The growth case for website improvement is: protect the referral pipeline by ensuring the site matches the quality of the recommendation that preceded it.</p>
+      </div>
+      <div class="therefore-block">
+        <strong>Therefore:</strong> Website investment for Ogilvie should focus on verification-stage content (awards, data, proof points, case studies) rather than acquisition-stage content (CTAs, lead forms, campaign landing pages). The ROI is in not losing the warm referral.
+      </div>
+      <button class="ask-section-btn" onclick="openChatbot('Based on the Web Intelligence for Ogilvie Fleet, what is the best use of a 2-day developer sprint to improve the site?')">🧠 Ask about this section →</button>
+    </div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════════════════════ -->
+<footer>
+  <div>Generated by <strong>Friction &amp; Toil Intelligence Systems v2.0</strong> | <a href="https://frictionandtoil.com" target="_blank">frictionandtoil.com</a></div>
+  <div style="margin-top:4px">Classification: <strong>CONFIDENTIAL — CLIENT USE ONLY</strong></div>
+  <div style="margin-top:4px">Generated: 2 April 2026 | Intelligence as of: 2 April 2026</div>
+  <div style="margin-top:4px">Subject: Ogilvie Fleet Limited (SC067027) | Variant: D — Full Unified | Website Type: C — Brochure/Credibility</div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════
+     CHATBOT — "Ask your Intelligence Advisor"
+════════════════════════════════════════════════════════════ -->
+<button id="chatbot-toggle" onclick="toggleChatbot()" title="Ask your Intelligence Advisor">🧠</button>
+
+<div id="chatbot-panel">
+  <div class="chat-header">
+    <div>
+      <div class="chat-header-title">Ask your Intelligence Advisor</div>
+      <div class="chat-header-meta">Ogilvie Fleet Intelligence Report · April 2026</div>
+    </div>
+    <button class="chat-close" onclick="toggleChatbot()">×</button>
+  </div>
+  <div class="chat-messages" id="chat-messages">
+    <div class="msg advisor">Hello. I'm your Intelligence Advisor for this Ogilvie Fleet report. I have full access to all intelligence gathered across the CEO Strategic, Web, and M&amp;A analysis. Ask me anything.</div>
+    <div id="starter-qs" class="starter-questions">
+      <button class="starter-q" onclick="sendStarterQ(this)">What's the single biggest risk Ogilvie Fleet faces right now?</button>
+      <button class="starter-q" onclick="sendStarterQ(this)">Who are the most likely acquirers and what would they pay?</button>
+      <button class="starter-q" onclick="sendStarterQ(this)">What should the CEO prioritise this quarter?</button>
+    </div>
+  </div>
+  <div class="chat-input-row">
+    <textarea class="chat-input" id="chat-input" placeholder="Ask about any finding in this report..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}" rows="1"></textarea>
+    <button class="chat-send" onclick="sendMessage()">→</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════════════════════ -->
+<script>
+// ── PASSWORD GATE ────────────────────────────────────────
+const REPORT_PASSWORD = 'ogilvie2026';
+(function(){
+  const gate = document.getElementById('password-gate');
+  if(sessionStorage.getItem('ft-auth') === REPORT_PASSWORD){
+    gate.classList.add('hidden');
+  }
+})();
+function checkPassword(){
+  const input = document.getElementById('gate-input').value;
+  const err = document.getElementById('gate-error');
+  if(input === REPORT_PASSWORD){
+    sessionStorage.setItem('ft-auth', input);
+    document.getElementById('password-gate').classList.add('hidden');
+    err.textContent = '';
+  } else {
+    err.textContent = 'Incorrect access code. Please try again.';
+    document.getElementById('gate-input').value = '';
+  }
+}
+
+// ── TOP LEVEL NAV ────────────────────────────────────────
+function switchLevel(levelId, btn){
+  document.querySelectorAll('.level').forEach(s => s.style.display = 'none');
+  const el = document.getElementById('level-' + levelId);
+  if(el) el.style.display = 'block';
+  document.querySelectorAll('[data-level]').forEach(b => b.classList.remove('active'));
+  if(btn && btn.classList) btn.classList.add('active');
+  else {
+    const found = document.querySelector('[data-level="' + levelId + '"]');
+    if(found) found.classList.add('active');
+  }
+  window.scrollTo({top:0, behavior:'smooth'});
+  updateChatContext(levelId);
+}
+
+// Show dashboard by default after auth
+document.getElementById('level-dashboard').style.display = 'block';
+document.querySelectorAll('.level').forEach(s => {
+  if(s.id !== 'level-dashboard') s.style.display = 'none';
+});
+
+// ── SUB-TAB NAV ──────────────────────────────────────────
+function switchSubTab(levelId, tabId, btn){
+  const level = document.getElementById('level-' + levelId);
+  if(!level) return;
+  level.querySelectorAll('.tab-content').forEach(t => { t.style.display = 'none'; t.classList.remove('active'); });
+  const tab = document.getElementById(tabId);
+  if(tab){ tab.style.display = 'block'; tab.classList.add('active'); }
+  const nav = document.querySelector('#' + levelId + '-sub-nav') || level.querySelector('.sub-tabs-nav');
+  if(nav) nav.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+}
+
+// Initialise sub-tabs
+document.querySelectorAll('.tab-content').forEach(t => {
+  if(!t.classList.contains('active')) t.style.display = 'none';
+  else t.style.display = 'block';
+});
+
+// ── SCORE RING ANIMATION ──────────────────────────────────
+const CIRCUMFERENCE = 2 * Math.PI * 66; // 414.69
+document.querySelectorAll('.ring-progress').forEach(circle => {
+  const score = parseInt(circle.getAttribute('data-score'));
+  const filled = (score / 100) * CIRCUMFERENCE;
+  const gap = CIRCUMFERENCE - filled;
+  circle.setAttribute('stroke-dasharray', Math.round(filled) + ' ' + Math.round(gap));
+  circle.style.transition = 'stroke-dashoffset 1.5s ease-out';
+});
+
+// ── CHATBOT ───────────────────────────────────────────────
+const REPORT_API_KEY = '{{ANTHROPIC_API_KEY}}'; // Inject at deploy time
+let conversationHistory = [];
+let currentTab = 'dashboard';
+let adviseCEOMode = false;
+
+const SYSTEM_PROMPT = `You are an F&T Intelligence Advisor — a senior strategic consultant with deep expertise across business strategy, competitive intelligence, M&A, fleet industry dynamics, regulatory compliance, and web performance.
+
+You have access to a comprehensive intelligence report about OGILVIE FLEET LIMITED in the UK Independent Fleet Leasing sector, covering:
+- Strategic Health (51/100 AMBER), Web Presence (54/100 AMBER), Market Position (63/100 BLUE), and Operational Readiness (71/100 BLUE)
+- CEO-level strategic analysis: M&A signals, EV residual value risk, scenarios, regulatory pipeline
+- Stakeholder intelligence: Board composition, July 2025 leadership restructure, power architecture
+- Employee intelligence: 6× Best Companies Outstanding, AI capability gap, ONWRD acquisition
+- Web intelligence: Credibility gap (72% of market position communicated), Type C brochure site
+
+KEY FACTS ABOUT OGILVIE FLEET:
+- £247M turnover (FY Jun 2023), 25,000 vehicles under management, 22,000 on-risk, FN50 #14
+- 98% customer retention, 700 SME clients, 127-150 employees, £49.4M cash, £76M net assets
+- 100% family-owned (Duncan Henderson Ogilvie, third generation, est. 1953 Stirling Scotland)
+- Acquired ONWRD (flexible rental) December 2025 — first-ever acquisition
+- July 2025 leadership restructure: Gordon Stephen MD→Chairman, Nick Hardy new MD
+- Board inner circle (real decisions): Duncan Ogilvie + Gordon Stephen + John Watson (34yr Finance Director)
+- Andy Stephen (Gordon's brother) holds Technology & Systems Director mandate with AI integration remit — no visible tech hires behind it
+
+EV RESIDUAL VALUE RISK:
+- Used EV supply forecast +178% by 2027 — second wave of RV deterioration possible
+- Industry profits fell 91% in 2025 on RV losses; EV values fell 60% Sep 2022–Sep 2024
+- Bear case: £18–28M above-provision losses on £76M net assets
+- No bank parent to absorb losses (unlike Lloyds Transport, Ayvens, Arval)
+
+M&A INTELLIGENCE:
+- Ogilvie is valued at £200–320M (Tusker £300M for 23k vehicles is primary comparable)
+- Novuna Vehicle Solutions (MUFG-backed, FN50 #6, fastest-growing) flagged as highest-probability acquirer
+- Novuna lacks Scottish presence and SME depth that Ogilvie owns
+- Sector is in late-stage consolidation: ALD/LeasePlan→Ayvens (£4.1bn), Lloyds→Tusker (£300M), GVG→Fleet Alliance (Jun 2025)
+- Family ownership is the structural barrier — and the eventual catalyst
+
+REGULATORY:
+- FCA PS26/3 Motor Finance Redress live 31 May 2026 (leasing excluded but operational impact)
+- ZEV mandate 33% cars / 24% vans in 2026; 38%/34% in 2027
+- eVED (3p/mile for EVs) consultation closed Mar 2026; legislation expected April 2028
+- FCA Consumer Duty Q3 2026 thematic review — board-level evidence pack required
+- 17 specific compliance actions identified; 5 immediate (by end June 2026)
+
+THREE SCENARIOS (2026–2029):
+- Base "Resilient Climber" (55%): 27-30k vehicles, £290-310M turnover
+- Bull "Mobility Platform Leader" (20%): 36-40k vehicles, £315-360M turnover, EV £180-240M
+- Bear "Balance Sheet Squeeze" (25%): 18-20k vehicles, £18-28M EV RV losses above provision
+
+YOUR IDENTITY: You are "the Intelligence Advisor" — not a generic AI assistant. You speak with the authority of someone who has spent weeks researching this company. You reference specific findings from the report, not general advice.
+
+RULES:
+1. Answer ONLY from the report content. Never fabricate data or cite sources not in the report.
+2. Cross-reference across tabs when it adds value.
+3. Every answer must end with a specific, actionable recommendation.
+4. Use **bold** for key metrics and findings.
+5. Be direct. No filler. Board-room ready language.
+6. If asked about something not in the report, say so clearly.
+
+TONE ADAPTATION:
+- CEO Strategic tab: Authoritative and board-ready. Address leadership directly.
+- Meeting Intelligence tab: Sharp and tactical.
+- Web Intelligence tab: Practical and action-oriented.
+- Dashboard: Strategic overview. Connect dots across all systems.`;
+
+const ADVISE_CEO_EXTENSION = `
+SPECIAL MODE: You are now advising the CEO of OGILVIE FLEET directly. Use second-person address ("you should", "your team needs to"). Every recommendation must include:
+- What to do
+- Why now (specific urgency driver from the intelligence)
+- Who should own it
+- Timeline (this week / this month / this quarter)
+Do not hedge. Be decisive. The CEO is paying for clarity, not caveats.`;
+
+function updateChatContext(tab){
+  currentTab = tab;
+}
+
+function toggleChatbot(){
+  const panel = document.getElementById('chatbot-panel');
+  panel.classList.toggle('open');
+}
+
+function openChatbot(prePopulate){
+  const panel = document.getElementById('chatbot-panel');
+  panel.classList.add('open');
+  if(prePopulate){
+    const input = document.getElementById('chat-input');
+    input.value = prePopulate;
+    setTimeout(() => sendMessage(), 100);
+  }
+}
+
+function openAdviseCEO(){
+  adviseCEOMode = true;
+  const panel = document.getElementById('chatbot-panel');
+  panel.classList.add('open');
+  const msgs = document.getElementById('chat-messages');
+  const welcomeMsg = document.createElement('div');
+  welcomeMsg.className = 'msg advisor';
+  welcomeMsg.innerHTML = '<strong style="color:var(--ft-gold)">Advise the CEO mode activated.</strong><br>I\'m now advising you directly as CEO of Ogilvie Fleet. Every recommendation will be specific, with a timeline and an owner. What do you need to address?';
+  msgs.appendChild(welcomeMsg);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function sendStarterQ(btn){
+  const q = btn.textContent;
+  document.getElementById('starter-qs').remove();
+  sendChat(q);
+}
+
+function sendMessage(){
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if(!msg) return;
+  input.value = '';
+  sendChat(msg);
+}
+
+function sendChat(message){
+  const msgs = document.getElementById('chat-messages');
+
+  // Add user message
+  const userDiv = document.createElement('div');
+  userDiv.className = 'msg user';
+  userDiv.textContent = message;
+  msgs.appendChild(userDiv);
+
+  // Add thinking
+  const thinkDiv = document.createElement('div');
+  thinkDiv.className = 'msg advisor thinking';
+  thinkDiv.textContent = 'Analysing…';
+  msgs.appendChild(thinkDiv);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // Add to history
+  conversationHistory.push({role:'user', content: message});
+
+  // Build system prompt
+  const systemPrompt = SYSTEM_PROMPT + (adviseCEOMode ? ADVISE_CEO_EXTENSION : '') +
+    '\n\nCURRENT TAB: ' + currentTab;
+
+  // API call
+  const apiKey = REPORT_API_KEY;
+  if(!apiKey || apiKey === '{{ANTHROPIC_API_KEY}}'){
+    thinkDiv.className = 'msg advisor';
+    thinkDiv.innerHTML = '<em>To activate the Intelligence Advisor, add your Anthropic API key to the REPORT_API_KEY variable in the HTML. Contact Friction &amp; Toil for assistance.</em>';
+    msgs.scrollTop = msgs.scrollHeight;
+    return;
+  }
+
+  fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system: systemPrompt,
+      messages: conversationHistory
+    })
+  })
+  .then(r => r.json())
+  .then(data => {
+    const reply = data.content?.[0]?.text || 'Unable to generate response.';
+    conversationHistory.push({role:'assistant', content: reply});
+    thinkDiv.className = 'msg advisor';
+    thinkDiv.innerHTML = reply.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+    msgs.scrollTop = msgs.scrollHeight;
+    // Prune history if > 20 pairs
+    if(conversationHistory.length > 40){
+      conversationHistory = conversationHistory.slice(-40);
+    }
+  })
+  .catch(err => {
+    thinkDiv.className = 'msg advisor';
+    thinkDiv.textContent = 'Connection error. Please try again.';
+    msgs.scrollTop = msgs.scrollHeight;
+    console.error(err);
+  });
+}
+</script>
+
+</body>
+</html>
