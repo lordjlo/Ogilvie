@@ -490,7 +490,7 @@ tr:last-child td{border-bottom:none}
 .mobile-nav::-webkit-scrollbar{display:none}
 .mobile-nav-group{display:none;height:100%;align-items:center;gap:6px}
 .mobile-nav-group.active{display:inline-flex}
-.mnav{padding:6px 14px;background:var(--surface);border:1px solid var(--border);border-radius:20px;color:var(--muted);font-size:11px;font-weight:600;white-space:nowrap;cursor:pointer;transition:all 0.2s;flex:0 0 auto}
+.mnav{padding:8px 16px;background:var(--surface);border:1px solid var(--border);border-radius:20px;color:var(--muted);font-size:11px;font-weight:600;white-space:nowrap;cursor:pointer;transition:all 0.2s;flex:0 0 auto;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none}
 .mnav.active{background:rgba(201,162,39,0.15);border-color:rgba(201,162,39,0.4);color:var(--gold-high)}
 
 /* Matrix grid */
@@ -2107,8 +2107,14 @@ document.querySelectorAll('.mnav').forEach(function(pill){
       window.scrollTo({top:0,behavior:'instant'});
       if(section==='d-rings') setTimeout(initRings,200);
     }
-    // scroll pill into view
-    pill.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+    // scroll pill into view within the nav strip (not the page)
+    var nav=pill.closest('.mobile-nav');
+    if(nav){
+      var pillLeft=pill.offsetLeft;
+      var pillW=pill.offsetWidth;
+      var navW=nav.offsetWidth;
+      nav.scrollTo({left:pillLeft - (navW/2) + (pillW/2),behavior:'smooth'});
+    }
   });
 });
 // Sync mobile nav groups when tab changes
