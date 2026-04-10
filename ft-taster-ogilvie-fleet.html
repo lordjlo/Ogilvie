@@ -1,433 +1,200 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Intelligence Preview — Ogilvie Fleet | Friction &amp; Toil</title>
-  <style>
-    :root{--ft-bg:#0a0e17;--ft-surface:#111827;--ft-surface-elevated:#1a2235;--ft-border:#1e293b;--ft-text:#e2e8f0;--ft-text-muted:#94a3b8;--ft-accent:#3b82f6;--ft-gold:#c9a84c;--ft-red:#ef4444;--ft-amber:#f59e0b;--ft-blue:#3b82f6;--ft-green:#22c55e;--ft-glass:rgba(17,24,39,0.7);--ft-glass-border:rgba(255,255,255,0.08)}
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{background:var(--ft-bg);color:var(--ft-text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.6}
-    .container{max-width:1200px;margin:0 auto;padding:32px 24px}
-    /* NAV */
-    .top-bar{background:rgba(10,14,23,0.97);border-bottom:1px solid var(--ft-border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
-    .nav-brand{color:var(--ft-gold);font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase}
-    .nav-label{color:var(--ft-text-muted);font-size:13px}
-    /* CARDS */
-    .glass-card{background:var(--ft-glass);border:1px solid var(--ft-glass-border);border-radius:16px;padding:24px;margin-bottom:20px;backdrop-filter:blur(12px)}
-    .gold-card{border-color:rgba(201,168,76,0.3);background:rgba(201,168,76,0.04)}
-    /* IDENTITY */
-    .identity-block{background:linear-gradient(135deg,#0f172a,#1a2235);border:1px solid rgba(201,168,76,0.2);border-radius:16px;padding:28px 32px;margin-bottom:24px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px}
-    .identity-company{font-size:36px;font-weight:700;color:var(--ft-gold)}
-    .identity-meta{color:var(--ft-text-muted);font-size:14px;margin-top:8px}
-    .badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:0.5px;text-transform:uppercase}
-    .badge-gold{background:rgba(201,168,76,0.15);color:var(--ft-gold);border:1px solid rgba(201,168,76,0.3);font-size:12px;padding:3px 10px;border-radius:20px}
-    .badge-assessed{background:rgba(245,158,11,0.15);color:var(--ft-amber);border:1px solid rgba(245,158,11,0.3)}
-    .badge-data{background:rgba(34,197,94,0.15);color:var(--ft-green);border:1px solid rgba(34,197,94,0.3)}
-    .badge-preview{background:rgba(201,168,76,0.2);color:var(--ft-gold);border:1px solid var(--ft-gold);font-size:12px;padding:4px 12px;border-radius:20px}
-    /* RINGS */
-    .rings-row{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:24px}
-    @media(max-width:900px){.rings-row{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:480px){.rings-row{grid-template-columns:1fr}}
-    .ring-card{background:var(--ft-glass);border:1px solid var(--ft-glass-border);border-radius:16px;padding:24px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
-    .ring-label{font-size:12px;color:var(--ft-text-muted);text-transform:uppercase;letter-spacing:1px}
-    .ring-range{font-size:22px;font-weight:700;line-height:1;color:var(--ft-amber)}
-    .ring-range.blue{color:var(--ft-blue)}
-    .ring-range.precise{font-size:32px;color:var(--ft-amber)}
-    .ring-therefore{font-size:12px;color:var(--ft-text);font-style:italic;text-align:center;border-top:1px solid var(--ft-border);padding-top:10px;width:100%}
-    /* PORTAL WRAPPER */
-    .portal-wrapper{text-align:center;padding:28px;margin:24px 0;background:rgba(201,168,76,0.03);border:1px solid rgba(201,168,76,0.2);border-radius:16px}
-    .portal-text{font-size:20px;font-style:italic;color:var(--ft-gold);text-shadow:0 0 20px rgba(201,168,76,0.3);line-height:1.6}
-    /* DECISION (first one unlocked) */
-    .decision-card{background:var(--ft-surface);border:1px solid var(--ft-border);border-left:3px solid var(--ft-gold);border-radius:8px;padding:16px 20px;margin-bottom:12px}
-    .decision-title{font-size:15px;font-weight:600;color:var(--ft-text);margin-bottom:8px}
-    .decision-meta{display:flex;flex-direction:column;gap:4px}
-    .decision-row{display:flex;gap:8px;font-size:13px}
-    .decision-row-label{color:var(--ft-gold);font-weight:600;white-space:nowrap;min-width:80px}
-    .decision-row-val{color:var(--ft-text-muted)}
-    /* LOCKED DECISIONS */
-    .locked-decisions{position:relative;margin-top:12px}
-    .locked-decisions-blur{filter:blur(3px);pointer-events:none;opacity:0.5}
-    .locked-decisions-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;gap:12px}
-    .locked-card-stub{background:var(--ft-surface);border:1px solid var(--ft-border);border-radius:8px;height:80px;margin-bottom:8px}
-    /* TAB NAV CARDS (locked) */
-    .tab-nav-row{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:24px}
-    @media(max-width:700px){.tab-nav-row{grid-template-columns:1fr}}
-    .tab-nav-card{background:var(--ft-glass);border:1px solid var(--ft-glass-border);border-radius:16px;padding:20px;position:relative;overflow:hidden}
-    .tab-nav-card .tnc-icon{font-size:28px;margin-bottom:8px}
-    .tab-nav-card .tnc-name{font-size:16px;font-weight:600;margin-bottom:4px}
-    .tab-nav-card .tnc-score{font-size:20px;font-weight:700;margin-bottom:8px}
-    .tab-nav-card .tnc-teaser{font-size:13px;color:var(--ft-text-muted);margin-bottom:16px;line-height:1.5}
-    /* CTA BUTTON */
-    .cta-button{background:linear-gradient(135deg,var(--ft-gold),#d4af37);color:#0a0e17;font-weight:700;padding:12px 24px;border-radius:8px;font-size:14px;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;border:none;display:inline-block;text-decoration:none}
-    .cta-button:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(201,168,76,0.3)}
-    .cta-button-full{width:100%;padding:14px;font-size:15px;margin-top:8px}
-    /* VALUE STATEMENT */
-    .value-statement{background:linear-gradient(135deg,rgba(201,168,76,0.06),rgba(59,130,246,0.06));border:1px solid rgba(201,168,76,0.2);border-radius:16px;padding:28px 32px;margin-bottom:24px;text-align:center}
-    .value-number{font-size:52px;font-weight:700;color:var(--ft-amber);line-height:1;margin-bottom:12px}
-    .value-label{font-size:15px;color:var(--ft-text-muted);max-width:600px;margin:0 auto;line-height:1.6}
-    /* HERO TEXT */
-    .hero-text{font-size:22px;line-height:1.6;font-style:italic;color:var(--ft-text)}
-    /* LOCK OVERLAY for tab sections */
-    .locked-tab-content{position:relative;padding:20px;background:var(--ft-surface);border:1px solid var(--ft-border);border-radius:12px;overflow:hidden;min-height:120px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:12px}
-    .locked-tab-teaser{font-size:14px;color:var(--ft-text-muted);font-style:italic}
-    .locked-tab-label{font-size:11px;color:var(--ft-text-muted);text-transform:uppercase;letter-spacing:1px}
-    /* FOOTER */
-    footer{text-align:center;padding:32px 24px;color:var(--ft-text-muted);font-size:12px;border-top:1px solid var(--ft-border);margin-top:40px}
-    /* CHATBOT (taster — restricted) */
-    #chatbot-toggle{position:fixed;bottom:24px;right:24px;width:56px;height:56px;background:linear-gradient(135deg,#c9a84c,#d4af37);border:none;border-radius:50%;cursor:pointer;z-index:500;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 20px rgba(201,168,76,0.4);transition:transform 0.2s}
-    #chatbot-toggle:hover{transform:scale(1.1)}
-    #chatbot-panel{position:fixed;bottom:90px;right:24px;width:380px;height:480px;background:rgba(17,24,39,0.97);backdrop-filter:blur(12px);border:1px solid rgba(201,168,76,0.2);border-radius:16px;z-index:499;display:none;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5)}
-    #chatbot-panel.open{display:flex}
-    .chat-header{background:linear-gradient(135deg,#1a2235,#0a0e17);border-bottom:1px solid #c9a84c;padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
-    .chat-header-title{color:var(--ft-gold);font-weight:700;font-size:14px}
-    .chat-header-meta{color:var(--ft-text-muted);font-size:11px;margin-top:2px}
-    .chat-header-badge{background:rgba(245,158,11,0.2);color:var(--ft-amber);border:1px solid rgba(245,158,11,0.4);font-size:10px;padding:2px 6px;border-radius:4px;font-weight:700}
-    .chat-close{background:none;border:none;color:var(--ft-text-muted);cursor:pointer;font-size:18px;padding:4px}
-    .chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
-    .msg{max-width:85%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.5}
-    .msg.user{background:#3b82f6;color:#fff;align-self:flex-end;border-radius:12px 12px 0 12px}
-    .msg.advisor{background:#1a2235;border:1px solid rgba(201,168,76,0.15);color:var(--ft-text);align-self:flex-start;border-radius:12px 12px 12px 0}
-    .starter-questions{display:flex;flex-direction:column;gap:6px;margin:8px 0}
-    .starter-q{background:var(--ft-surface);border:1px solid var(--ft-border);color:var(--ft-text-muted);border-radius:8px;padding:8px 12px;font-size:12px;cursor:pointer;text-align:left;transition:all 0.2s}
-    .starter-q:hover{border-color:var(--ft-gold);color:var(--ft-text)}
-    .upgrade-prompt{background:linear-gradient(135deg,rgba(201,168,76,0.1),rgba(59,130,246,0.05));border:1px solid rgba(201,168,76,0.3);border-radius:12px;padding:16px;margin-top:8px;align-self:stretch}
-    .upgrade-prompt h4{color:var(--ft-gold);font-size:13px;margin-bottom:8px}
-    .upgrade-prompt p{font-size:12px;color:var(--ft-text-muted);line-height:1.5;margin-bottom:12px}
-    .upgrade-prompt ul{font-size:12px;color:var(--ft-text-muted);padding-left:16px;line-height:1.8;margin-bottom:12px}
-    .chat-footer{padding:12px 16px;border-top:1px solid var(--ft-border);display:flex;align-items:center;gap:8px}
-    .chat-locked-notice{font-size:12px;color:var(--ft-text-muted);font-style:italic;flex:1}
-    small{font-size:13px;color:var(--ft-text-muted)}
-    strong{color:var(--ft-text)}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ogilvie Fleet · Strategic Intelligence · Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050a18;--bg-2:#0a1428;--surface:rgba(255,255,255,0.03);--surface-2:rgba(255,255,255,0.05);
+  --border:rgba(201,162,39,0.15);--border-strong:rgba(201,162,39,0.35);
+  --text:#e8ecf4;--text-dim:#8a93a8;--text-mute:#5a6378;
+  --accent:#c9a227;--gold:#c9a227;--gold-high:#e4bf4d;--gold-dim:#8a6f1a;
+  --indigo:#818cf8;--amber:#fbbf24;--rose:#fb7185;--cyan:#22d3ee;
+  --red:#f87171;--green:#4ade80;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body{background:radial-gradient(ellipse at top,#0a1428 0%,#050a18 60%);min-height:100vh}
+a{color:var(--gold-high);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1200px;margin:0 auto;padding:0 28px}
+.classify{background:#0a0e1a;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.6px;color:var(--gold-dim);text-transform:uppercase;padding:9px 0;text-align:center}
+.classify b{color:var(--gold-high);font-weight:600}
+header.top{border-bottom:1px solid var(--border);padding:38px 0 32px;margin-bottom:40px}
+.kicker{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2.2px;color:var(--gold);text-transform:uppercase;margin-bottom:14px}
+h1.title{font-family:'Space Grotesk',sans-serif;font-size:42px;font-weight:600;line-height:1.1;color:#fff;margin-bottom:10px;letter-spacing:-0.5px}
+h1.title span{color:var(--gold-high)}
+.sub{color:var(--text-dim);font-size:15px;max-width:780px}
+.badge{display:inline-block;padding:4px 10px;border:1px solid var(--border-strong);border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.2px;color:var(--gold-high);text-transform:uppercase;margin-left:8px}
+/* MIF card */
+.mif{background:linear-gradient(180deg,rgba(201,162,39,0.08),rgba(201,162,39,0.02));border:1px solid var(--border-strong);border-radius:14px;padding:32px 34px;margin-bottom:36px}
+.mif .label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-bottom:16px}
+.mif blockquote{font-family:'Source Serif 4',Georgia,serif;font-size:19px;line-height:1.55;color:#f2e9c7;font-style:italic;border-left:2px solid var(--gold);padding-left:18px}
+.mif .nums{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:24px;padding-top:22px;border-top:1px solid var(--border)}
+.mif .nums .n{text-align:center}
+.mif .nums .n .v{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:600;color:var(--gold-high);font-variant-numeric:tabular-nums;display:block}
+.mif .nums .n .l{font-size:10px;letter-spacing:1.4px;color:var(--text-mute);text-transform:uppercase;margin-top:4px;display:block}
+/* Rings */
+.rings{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:40px}
+.ring-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 18px;text-align:center;backdrop-filter:blur(8px)}
+.ring-svg{width:120px;height:120px;margin:0 auto}
+.ring-bg{fill:none;stroke:rgba(255,255,255,0.06);stroke-width:10}
+.ring-fg{fill:none;stroke-width:10;stroke-linecap:round;transform:rotate(-90deg);transform-origin:center}
+.ring-fg.c1{stroke:var(--indigo)}.ring-fg.c2{stroke:var(--amber)}.ring-fg.c3{stroke:var(--rose)}.ring-fg.c4{stroke:var(--cyan)}
+.ring-num{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;fill:#fff;text-anchor:middle;dominant-baseline:middle}
+.ring-num.c1{fill:var(--indigo)}.ring-num.c2{fill:var(--amber)}.ring-num.c3{fill:var(--rose)}.ring-num.c4{fill:var(--cyan)}
+.ring-label{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.2px;margin-top:12px;font-weight:500}
+.ring-sub{font-size:10px;color:var(--text-mute);margin-top:2px;font-family:'JetBrains Mono',monospace}
+/* Locked tabs */
+h2.sect{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin:36px 0 18px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.locks{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:36px}
+.lock{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 24px 22px;position:relative;overflow:hidden}
+.lock::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(5,10,24,0.92) 100%);pointer-events:none}
+.lock .ico{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold-dim);letter-spacing:1.4px;text-transform:uppercase;margin-bottom:10px}
+.lock h3{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:#fff;margin-bottom:10px}
+.lock p{color:var(--text-dim);font-size:13.5px;line-height:1.6;margin-bottom:8px}
+.lock .lockbar{position:absolute;bottom:0;left:0;right:0;padding:11px 24px;background:rgba(201,162,39,0.08);border-top:1px solid var(--border-strong);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.4px;color:var(--gold-high);text-transform:uppercase;z-index:2;display:flex;justify-content:space-between;align-items:center}
+.lock .lockbar .pad{letter-spacing:2px}
+/* CTA */
+.cta{background:linear-gradient(135deg,rgba(201,162,39,0.14),rgba(201,162,39,0.03));border:1px solid var(--border-strong);border-radius:14px;padding:36px 38px;text-align:center;margin-bottom:32px}
+.cta h3{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:600;color:#fff;margin-bottom:10px}
+.cta p{color:var(--text-dim);max-width:620px;margin:0 auto 22px;font-size:14.5px}
+.cta .btn{display:inline-block;background:var(--gold);color:#0a0e1a;padding:13px 30px;border-radius:999px;font-weight:600;letter-spacing:0.5px;font-size:14px;transition:transform .15s,background .15s}
+.cta .btn:hover{background:var(--gold-high);text-decoration:none;transform:translateY(-1px)}
+.cta .fine{margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.4px;color:var(--text-mute);text-transform:uppercase}
+/* Footer */
+footer{border-top:1px solid var(--border);padding:26px 0 40px;margin-top:30px;text-align:center;color:var(--text-mute);font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:1.2px;text-transform:uppercase}
+footer a{color:var(--gold)}
+@media (max-width:860px){
+  h1.title{font-size:30px}
+  .mif{padding:24px}
+  .mif .nums{grid-template-columns:repeat(2,1fr)}
+  .rings{grid-template-columns:repeat(2,1fr)}
+  .locks{grid-template-columns:1fr}
+}
+</style>
 </head>
 <body>
 
-<!-- TOP BAR -->
-<div class="top-bar">
-  <div class="nav-brand">F&amp;T Intelligence</div>
-  <div class="nav-label">Intelligence Preview — Ogilvie Fleet</div>
-  <span class="badge-preview badge">Preview Report</span>
+<div class="classify wrap-outer"><div class="wrap">STRATEGIC INTELLIGENCE · INDEPENDENT FLEET INTELLIGENCE · <b>PREVIEW</b> ● GO 72/100 · ZENITH / BRIDGEPOINT · APR 2026</div></div>
+
+<main class="wrap">
+
+<header class="top">
+  <div class="kicker">Ogilvie Fleet · Opus Intelligence Report · Preview Edition</div>
+  <h1 class="title">The UK's last high-quality <span>independent fleet lessor</span><span class="badge">Preview</span></h1>
+  <p class="sub">This preview shows the headline verdict, strategic scoring, and a teaser of the four-tab intelligence brief. Full report — 4 lenses, 90-day decision register, EV range, timing playbook, and web intelligence audit — is available on request.</p>
+</header>
+
+<!-- MIF -->
+<section class="mif">
+  <div class="label">◆ Most Important Finding</div>
+  <blockquote>Zenith's bonds are trading at 65p in the pound and its EBITDA has collapsed 34% to £42M — while Ogilvie Fleet sits on £85M cash, grew 9% organically, and retains 98% of its customers. The distressed PE incumbent has a 24–36 month exit window; Ogilvie has a generational strategic weapon it has not yet weaponised.</blockquote>
+  <div class="nums">
+    <div class="n"><span class="v">£85M</span><span class="l">Cash Reserve</span></div>
+    <div class="n"><span class="v">25,000</span><span class="l">Vehicles</span></div>
+    <div class="n"><span class="v">98%</span><span class="l">Retention</span></div>
+    <div class="n"><span class="v">+33%</span><span class="l">Sal-Sac YoY</span></div>
+  </div>
+</section>
+
+<!-- Rings -->
+<h2 class="sect">◆ Four-Ring Strategic Scoring</h2>
+<div class="rings">
+  <div class="ring-card">
+    <svg class="ring-svg" viewBox="0 0 120 120">
+      <circle class="ring-bg" cx="60" cy="60" r="50"/>
+      <circle class="ring-fg c1" cx="60" cy="60" r="50" stroke-dasharray="226.19" stroke-dashoffset="63.33"/>
+      <text class="ring-num c1" x="60" y="62">72</text>
+    </svg>
+    <div class="ring-label">Strategic Health</div>
+    <div class="ring-sub">GO · Indigo</div>
+  </div>
+  <div class="ring-card">
+    <svg class="ring-svg" viewBox="0 0 120 120">
+      <circle class="ring-bg" cx="60" cy="60" r="50"/>
+      <circle class="ring-fg c2" cx="60" cy="60" r="50" stroke-dasharray="226.19" stroke-dashoffset="118.48"/>
+      <text class="ring-num c2" x="60" y="62">47.6</text>
+    </svg>
+    <div class="ring-label">Web Presence</div>
+    <div class="ring-sub">Caution · Amber</div>
+  </div>
+  <div class="ring-card">
+    <svg class="ring-svg" viewBox="0 0 120 120">
+      <circle class="ring-bg" cx="60" cy="60" r="50"/>
+      <circle class="ring-fg c3" cx="60" cy="60" r="50" stroke-dasharray="226.19" stroke-dashoffset="74.64"/>
+      <text class="ring-num c3" x="60" y="62">67</text>
+    </svg>
+    <div class="ring-label">Market Position</div>
+    <div class="ring-sub">Hold · Rose</div>
+  </div>
+  <div class="ring-card">
+    <svg class="ring-svg" viewBox="0 0 120 120">
+      <circle class="ring-bg" cx="60" cy="60" r="50"/>
+      <circle class="ring-fg c4" cx="60" cy="60" r="50" stroke-dasharray="226.19" stroke-dashoffset="88.21"/>
+      <text class="ring-num c4" x="60" y="62">61</text>
+    </svg>
+    <div class="ring-label">Op Readiness</div>
+    <div class="ring-sub">Fix · Cyan</div>
+  </div>
 </div>
 
-<div class="container">
+<!-- Locked tabs -->
+<h2 class="sect">◆ Full Report · Four Lenses</h2>
+<div class="locks">
 
-  <!-- IDENTITY BLOCK -->
-  <div class="identity-block">
-    <div>
-      <div class="identity-company">Ogilvie Fleet</div>
-      <div class="identity-meta">UK Independent Fleet Leasing &nbsp;·&nbsp; UK Only &nbsp;·&nbsp; April 2026</div>
-      <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
-        <span class="badge-gold badge">Brochure / Credibility</span>
-        <span class="badge badge-data">FN50 Rank #14</span>
-        <span class="badge badge-preview badge">Intelligence Preview</span>
-      </div>
-    </div>
-    <div style="text-align:right">
-      <div style="font-size:12px;color:var(--ft-text-muted);text-transform:uppercase;letter-spacing:1px">Report Type</div>
-      <div style="font-size:18px;font-weight:700;color:var(--ft-gold);margin-top:4px">Taster — Dashboard Only</div>
-      <div style="font-size:12px;color:var(--ft-text-muted);margin-top:4px">Friction &amp; Toil Intelligence Systems v2.0</div>
-    </div>
+  <div class="lock">
+    <div class="ico">L1 · CEO Briefing</div>
+    <h3>The Board-Room Read</h3>
+    <p>What Nick Hardy and the Ogilvie board need to know this quarter. Salary sacrifice OpRA risk, Zenith distress playbook, construction cross-subsidy exposure, and the three strategic options the family faces before H1 2027.</p>
+    <p>Includes the 4 "act immediately" directives and the Bottom Line every board deck should open with.</p>
+    <div class="lockbar"><span>Unlock to read</span><span class="pad">● ● ● ● ● ●</span></div>
   </div>
 
-  <!-- MOST IMPORTANT FINDING -->
-  <div class="glass-card gold-card" style="margin-bottom:24px">
-    <div style="font-size:11px;color:var(--ft-gold);text-transform:uppercase;letter-spacing:2px;margin-bottom:12px">⚡ The Single Most Important Finding</div>
-    <p class="hero-text">"Ogilvie Fleet is a <strong style="color:var(--ft-gold)">£200–£320M acquisition target</strong> in a sector in late-stage consolidation, carrying up to <strong style="color:var(--ft-amber)">£28M of unprovisioned EV residual value exposure</strong> on an independently capitalised family balance sheet — with a simultaneous leadership transition and unbuilt AI capability compressing the window to act on the company's own terms before sector pressure forces the decision."</p>
+  <div class="lock">
+    <div class="ico">L2 · Strategic Advisor</div>
+    <h3>The B2 Show-and-Tell</h3>
+    <p>Third-party acquirer perspective — commissioned view for Zenith / Bridgepoint. Enterprise value range (£60M Bear → £150M+ Tusker-comparable), the four family power-holders, EV RV exposure levers, and the H1 2027–H1 2028 approach window.</p>
+    <p>Ends with the exact script for the first conversation with Gordon Stephen.</p>
+    <div class="lockbar"><span>Unlock to read</span><span class="pad">● ● ● ● ● ●</span></div>
   </div>
 
-  <!-- FOUR SCORE RINGS (ranges for 1/3/4, precise for Ring 2) -->
-  <div class="rings-row">
-
-    <!-- Ring 1: Strategic Health — RANGE 41–61 -->
-    <div class="ring-card">
-      <svg width="140" height="140" viewBox="0 0 140 140">
-        <circle cx="70" cy="70" r="66" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
-        <circle cx="70" cy="70" r="66" fill="none" stroke="#f59e0b" stroke-width="8"
-          stroke-dasharray="207 415" stroke-dashoffset="104" stroke-linecap="round" stroke-dasharray="5 5"
-          transform="rotate(-90 70 70)"/>
-        <text x="70" y="62" text-anchor="middle" fill="#f59e0b" font-size="22" font-weight="700">41–61</text>
-        <text x="70" y="80" text-anchor="middle" fill="#94a3b8" font-size="11">Indicative</text>
-      </svg>
-      <div class="ring-label">Strategic Health</div>
-      <span style="background:rgba(245,158,11,0.15);color:var(--ft-amber);border:1px solid rgba(245,158,11,0.3);display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;font-weight:700">RANGE</span>
-      <div class="ring-therefore">M&amp;A exposure + EV risk = asymmetric downside. Full score in complete report.</div>
-    </div>
-
-    <!-- Ring 2: Web Presence — PRECISE 53 -->
-    <div class="ring-card" style="border-color:rgba(201,168,76,0.3)">
-      <svg width="140" height="140" viewBox="0 0 140 140">
-        <circle cx="70" cy="70" r="66" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
-        <circle cx="70" cy="70" r="66" fill="none" stroke="#f59e0b" stroke-width="8"
-          stroke-dasharray="220 415" stroke-dashoffset="104" stroke-linecap="round"
-          transform="rotate(-90 70 70)"/>
-        <text x="70" y="68" text-anchor="middle" fill="#f59e0b" font-size="30" font-weight="700">53</text>
-        <text x="70" y="84" text-anchor="middle" fill="#94a3b8" font-size="11">/100</text>
-      </svg>
-      <div class="ring-label">Web Presence</div>
-      <span style="background:rgba(201,168,76,0.15);color:var(--ft-gold);border:1px solid rgba(201,168,76,0.3);display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;font-weight:700">PRECISE</span>
-      <div class="ring-therefore">35% of actual market position communicated. The biggest undeployed asset: the 98% retention rate isn't a hero stat.</div>
-    </div>
-
-    <!-- Ring 3: Market Position — RANGE 53–73 -->
-    <div class="ring-card">
-      <svg width="140" height="140" viewBox="0 0 140 140">
-        <circle cx="70" cy="70" r="66" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
-        <circle cx="70" cy="70" r="66" fill="none" stroke="#3b82f6" stroke-width="8"
-          stroke-dasharray="261 415" stroke-dashoffset="104" stroke-linecap="round" stroke-dasharray="5 5"
-          transform="rotate(-90 70 70)"/>
-        <text x="70" y="62" text-anchor="middle" fill="#3b82f6" font-size="22" font-weight="700">53–73</text>
-        <text x="70" y="80" text-anchor="middle" fill="#94a3b8" font-size="11">Indicative</text>
-      </svg>
-      <div class="ring-label">Market Position</div>
-      <span style="background:rgba(59,130,246,0.15);color:var(--ft-blue);border:1px solid rgba(59,130,246,0.3);display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;font-weight:700">RANGE</span>
-      <div class="ring-therefore">SME moat is strong but disruption exposure is significant. Full analysis in complete report.</div>
-    </div>
-
-    <!-- Ring 4: Operational Readiness — RANGE 61–81 -->
-    <div class="ring-card">
-      <svg width="140" height="140" viewBox="0 0 140 140">
-        <circle cx="70" cy="70" r="66" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="8"/>
-        <circle cx="70" cy="70" r="66" fill="none" stroke="#3b82f6" stroke-width="8"
-          stroke-dasharray="294 415" stroke-dashoffset="104" stroke-linecap="round" stroke-dasharray="5 5"
-          transform="rotate(-90 70 70)"/>
-        <text x="70" y="62" text-anchor="middle" fill="#3b82f6" font-size="22" font-weight="700">61–81</text>
-        <text x="70" y="80" text-anchor="middle" fill="#94a3b8" font-size="11">Indicative</text>
-      </svg>
-      <div class="ring-label">Operational Readiness</div>
-      <span style="background:rgba(59,130,246,0.15);color:var(--ft-blue);border:1px solid rgba(59,130,246,0.3);display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;font-weight:700">RANGE</span>
-      <div class="ring-therefore">6× Best Companies Outstanding. Execution risk window is high. Precise score in complete report.</div>
-    </div>
+  <div class="lock">
+    <div class="ico">L3 · Web Intelligence</div>
+    <h3>The Digital Credibility Gap</h3>
+    <p>22 Trustpilot reviews vs Zenith's 1,436. 0 of 6 AI search queries return Ogilvie. Prospeo's $7.1M algorithmic misread of a £247M business. £1.18M–£2.42M commercial drag, £15M–£25M valuation defence for a £150K fix.</p>
+    <p>Full 5-sub-dimension Ring 2 teardown plus the 90-day digital programme.</p>
+    <div class="lockbar"><span>Unlock to read</span><span class="pad">● ● ● ● ● ●</span></div>
   </div>
 
-  <!-- FIRST 90-DAY DECISION (unlocked) -->
-  <div class="glass-card" style="margin-bottom:24px">
-    <h2 style="font-size:22px;font-weight:700;margin-bottom:4px">🎯 The 90-Day Decision List</h2>
-    <p style="font-size:13px;color:var(--ft-text-muted);margin-bottom:20px">Five decisions that require action in Q2 2026. The most urgent:</p>
-
-    <div class="decision-card">
-      <div style="font-size:11px;color:var(--ft-red);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Decision 1 of 5 — Most Urgent</div>
-      <div class="decision-title">Commission an EV Residual Value Stress Test of the Forward Book</div>
-      <div class="decision-meta">
-        <div class="decision-row"><span class="decision-row-label">Why now:</span><span class="decision-row-val">Used EV supply +178% by 2027. Bear case loss exposure: £18–28M on £76M net assets. FCA Q3 2026 thematic review approaching. No bank parent to absorb excess.</span></div>
-        <div class="decision-row"><span class="decision-row-label">Enabled by:</span><span class="decision-row-val">Scenario Planning + Regulatory Pipeline intelligence</span></div>
-      </div>
-    </div>
-
-    <!-- Locked decisions 2-5 -->
-    <div class="locked-decisions">
-      <div class="locked-decisions-blur">
-        <div class="locked-card-stub" style="opacity:0.4"></div>
-        <div class="locked-card-stub" style="opacity:0.3"></div>
-        <div class="locked-card-stub" style="opacity:0.2"></div>
-        <div class="locked-card-stub" style="opacity:0.1"></div>
-      </div>
-      <div class="locked-decisions-overlay">
-        <div style="font-size:13px;color:var(--ft-text-muted)">4 more decisions in the full report</div>
-        <a href="mailto:hello@frictionandtoil.com?subject=Full Intelligence Report Request — Ogilvie Fleet" class="cta-button">Request Full Report →</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- PORTAL WRAPPER LINE -->
-  <div class="portal-wrapper">
-    <p class="portal-text">"We built this before we spoke. Everything here came from public data.<br>Imagine what we could build with yours."</p>
-  </div>
-
-  <!-- VALUE STATEMENT -->
-  <div class="value-statement" style="margin-bottom:24px">
-    <div class="value-number" style="font-size:40px">53 / 100</div>
-    <div class="value-label"><strong>Web Presence Score — the only precise ring in this preview.</strong><br><br>ogilvie-fleet.co.uk communicates approximately <strong>35% of Ogilvie Fleet's actual market position</strong>. Brand Clarity scores 44/100 — the weakest sub-dimension. The 98% customer retention rate, FN50 #14 ranking, and Investors in People Platinum that define the company's market leadership are not in the homepage hero zone. The full Web Intelligence report identifies five specific actions with the highest impact for a Type C brochure site.</div>
-  </div>
-
-  <!-- TAB NAVIGATION CARDS (locked) -->
-  <h2 style="font-size:22px;font-weight:700;margin-bottom:16px">What's in the Full Report</h2>
-  <div class="tab-nav-row">
-
-    <!-- CEO Strategic — locked -->
-    <div class="tab-nav-card">
-      <div class="tnc-icon">🧠</div>
-      <div class="tnc-name">CEO Strategic Intelligence</div>
-      <div class="tnc-score" style="color:var(--ft-amber)">Ring 1: 41–61 <small style="font-size:13px;color:var(--ft-text-muted)">(indicative)</small></div>
-      <div class="tnc-teaser">Bear case: £18–28M EV residual value losses above provision on a £76M independent balance sheet. The full report includes three quantified scenarios, 8 observable signals, M&amp;A signal analysis, and a named acquirer assessment.</div>
-      <div class="locked-tab-content" style="margin-top:12px">
-        <div class="locked-tab-label">9 sections locked</div>
-        <div class="locked-tab-teaser">Market Sentiment · Stakeholder Map · Three Scenarios · Regulatory Pipeline · M&amp;A Signals · Employee Intel · Competitive Intel · 90-Day Decisions</div>
-      </div>
-      <a href="mailto:hello@frictionandtoil.com?subject=Full Intelligence Report Request — Ogilvie Fleet" class="cta-button cta-button-full" style="display:block;text-align:center;margin-top:12px">Request Full Strategic Intelligence →</a>
-    </div>
-
-    <!-- Meeting Intel — locked -->
-    <div class="tab-nav-card">
-      <div class="tnc-icon">🤝</div>
-      <div class="tnc-name">Meeting Intelligence</div>
-      <div class="tnc-score" style="color:var(--ft-text-muted)">Activate with details</div>
-      <div class="tnc-teaser">Provide meeting purpose, attendee names, and your objective to generate 14+ meeting-specific smart questions, attendee profiles, and a decision support framework for any meeting with Ogilvie Fleet.</div>
-      <div class="locked-tab-content" style="margin-top:12px">
-        <div class="locked-tab-label">9 sections locked</div>
-        <div class="locked-tab-teaser">Attendee profiles · Smart questions · Company intelligence · Technology &amp; AI · M&amp;A context · Decision support matrix</div>
-      </div>
-      <a href="mailto:hello@frictionandtoil.com?subject=Full Intelligence Report Request — Ogilvie Fleet" class="cta-button cta-button-full" style="display:block;text-align:center;margin-top:12px">Request Full Meeting Intelligence →</a>
-    </div>
-
-    <!-- Web Intel — locked -->
-    <div class="tab-nav-card">
-      <div class="tnc-icon">🌐</div>
-      <div class="tnc-name">Web Intelligence</div>
-      <div class="tnc-score" style="color:var(--ft-amber)">Ring 2: 53 <small style="font-size:13px;color:var(--ft-text-muted)">/100 (precise)</small></div>
-      <div class="tnc-teaser">Brand Clarity: 44/100 — lowest sub-dimension. The website is technically competent but communicates 35% of the company's actual market position. The full report provides 5 priority actions with evidence.</div>
-      <div class="locked-tab-content" style="margin-top:12px">
-        <div class="locked-tab-label">5 groups locked</div>
-        <div class="locked-tab-teaser">Search · Design · Brand · Compete · Growth — each with specific findings, competitor comparison, and actionable recommendations</div>
-      </div>
-      <a href="mailto:hello@frictionandtoil.com?subject=Full Intelligence Report Request — Ogilvie Fleet" class="cta-button cta-button-full" style="display:block;text-align:center;margin-top:12px">Request Full Web Intelligence →</a>
-    </div>
-  </div>
-
-  <!-- MASTER CTA -->
-  <div class="glass-card gold-card" style="text-align:center;padding:40px">
-    <h2 style="font-size:26px;color:var(--ft-gold);margin-bottom:16px">This was built before we spoke.</h2>
-    <p style="color:var(--ft-text-muted);margin-bottom:24px;font-size:15px;max-width:600px;margin-left:auto;margin-right:auto">Everything in this preview came from public data. The full Unified Intelligence System includes 9 CEO Strategic sections, 5 Web Intelligence groups, and an embedded AI Intelligence Advisor pre-loaded with every finding. Request the full report to unlock the complete picture.</p>
-    <a href="mailto:hello@frictionandtoil.com?subject=Full Intelligence Report Request — Ogilvie Fleet" class="cta-button" style="font-size:16px;padding:16px 40px">Request Full Intelligence Report →</a>
-    <p style="font-size:12px;color:var(--ft-text-muted);margin-top:16px">Or call to discuss: frictionandtoil.com</p>
+  <div class="lock">
+    <div class="ico">L0 · Dashboard</div>
+    <h3>Scores, Scenarios, 90-Day Register</h3>
+    <p>Bear £60–80M / Base £85–105M / Bull £110–150M+ EV scenarios. Top-3 decisions with owners and deadlines. Full 90-day decision table. Four animated rings with sub-dimension drill-downs.</p>
+    <p>The executive canvas used to brief the Zenith situation in under ten minutes.</p>
+    <div class="lockbar"><span>Unlock to read</span><span class="pad">● ● ● ● ● ●</span></div>
   </div>
 
 </div>
 
-<!-- FOOTER -->
+<!-- CTA -->
+<section class="cta">
+  <h3>Request Full Access</h3>
+  <p>The complete Ogilvie Fleet Opus Intelligence Report — four lenses, EV model, family map, timing playbook, and full web audit — is available to qualified strategic, corporate, and investor audiences on request.</p>
+  <a class="btn" href="mailto:hello@frictionandtoil.com?subject=Ogilvie%20Fleet%20Opus%20%E2%80%94%20Full%20Report%20Request">Request Access →</a>
+  <div class="fine">hello@frictionandtoil.com · response within 24 hours</div>
+</section>
+
 <footer>
-  <div>Generated by <strong>Friction &amp; Toil Intelligence Systems v2.0</strong> | <a href="https://frictionandtoil.com" style="color:var(--ft-gold)">frictionandtoil.com</a></div>
-  <div style="margin-top:4px">This is a preview report. Request the full system for complete strategic, web, and meeting intelligence.</div>
-  <div style="margin-top:4px">Intelligence as of: 2 April 2026 | Variant: D Preview | Subject: Ogilvie Fleet Limited (SC067027)</div>
+  <div>Friction &amp; Toil · Independent Strategic Intelligence · <a href="https://frictionandtoil.com">frictionandtoil.com</a></div>
+  <div style="margin-top:6px;color:#3a4255">Prepared April 2026 · Based on public sources · © Friction &amp; Toil</div>
 </footer>
 
-<!-- CHATBOT (taster — restricted to 2 interactions, starter Qs only) -->
-<button id="chatbot-toggle" onclick="toggleChatbot()" title="Ask your Intelligence Advisor">🧠</button>
-
-<div id="chatbot-panel">
-  <div class="chat-header">
-    <div>
-      <div class="chat-header-title">Ask your Intelligence Advisor</div>
-      <div class="chat-header-meta">Preview mode &nbsp;<span class="chat-header-badge">2 questions available</span></div>
-    </div>
-    <button class="chat-close" onclick="toggleChatbot()">×</button>
-  </div>
-  <div class="chat-messages" id="chat-messages">
-    <div class="msg advisor">Hello. I'm your Intelligence Advisor for the Ogilvie Fleet dashboard. I can answer questions based on the dashboard intelligence you can see here. You have 2 preview questions available — the full report unlocks unlimited advisory conversations.</div>
-    <div id="starter-qs" class="starter-questions">
-      <button class="starter-q" onclick="sendStarterQ(this)">What's the single biggest risk Ogilvie Fleet faces right now?</button>
-      <button class="starter-q" onclick="sendStarterQ(this)">What does the Web Presence score of 53 mean in practice?</button>
-      <button class="starter-q" onclick="sendStarterQ(this)">Why is the EV residual value decision the most urgent?</button>
-    </div>
-  </div>
-  <div class="chat-footer">
-    <div class="chat-locked-notice">Preview mode: select a question above</div>
-  </div>
-</div>
-
-<script>
-const TASTER_API_KEY = '{{ANTHROPIC_API_KEY}}';
-let interactionCount = 0;
-const MAX_INTERACTIONS = 2;
-
-const TASTER_SYSTEM = `You are an F&T Intelligence Advisor providing a preview of the Ogilvie Fleet intelligence report. You can ONLY reference information visible in the dashboard:
-
-DASHBOARD FACTS:
-- Ogilvie Fleet: UK independent fleet leasing, £247M turnover, 25,000 vehicles, FN50 #14, Stirling Scotland
-- Ring 1 Strategic Health: 41-61 range (AMBER) — M&A exposure + EV residual value risk
-- Ring 2 Web Presence: 53/100 (AMBER, PRECISE) — 35% of market position communicated; Brand Clarity 44/100 is lowest dimension
-- Ring 3 Market Position: 53-73 range (BLUE) — strong SME moat, disruption exposure risk
-- Ring 4 Operational Readiness: 61-81 range (BLUE) — 6x Best Companies Outstanding
-- Most important finding: £200-320M acquisition target, up to £28M unprovisioned EV RV exposure, simultaneous leadership transition
-- Decision 1: Commission EV RV stress test — bear case £18-28M losses on £76M net assets, used EV supply +178% by 2027
-- Web Presence: site technically competent but 35% of story told; 98% retention, FN50 #14, Investors in People Platinum absent from homepage hero
-
-TASTER RULES:
-1. ONLY reference dashboard information above — do not fabricate additional details
-2. Keep responses under 150 words
-3. End every response with: "The full report contains [specific section name] with complete analysis."
-4. Be direct and specific — no generic advice
-5. Create pull for the full report naturally`;
-
-function toggleChatbot(){
-  document.getElementById('chatbot-panel').classList.toggle('open');
-}
-
-function sendStarterQ(btn){
-  if(interactionCount >= MAX_INTERACTIONS){
-    showUpgradePrompt();
-    return;
-  }
-  const q = btn.textContent;
-  document.getElementById('starter-qs').remove();
-  sendTasterChat(q);
-}
-
-function sendTasterChat(message){
-  if(interactionCount >= MAX_INTERACTIONS){
-    showUpgradePrompt();
-    return;
-  }
-
-  const msgs = document.getElementById('chat-messages');
-  const userDiv = document.createElement('div');
-  userDiv.className = 'msg user';
-  userDiv.textContent = message;
-  msgs.appendChild(userDiv);
-
-  const thinkDiv = document.createElement('div');
-  thinkDiv.className = 'msg advisor';
-  thinkDiv.textContent = 'Analysing…';
-  msgs.appendChild(thinkDiv);
-  msgs.scrollTop = msgs.scrollHeight;
-
-  interactionCount++;
-
-  const apiKey = TASTER_API_KEY;
-  if(!apiKey || apiKey === '{{ANTHROPIC_API_KEY}}'){
-    thinkDiv.innerHTML = 'The Intelligence Advisor requires an API key to activate. Contact Friction &amp; Toil for the full configured report.';
-    if(interactionCount >= MAX_INTERACTIONS) setTimeout(showUpgradePrompt, 500);
-    return;
-  }
-
-  fetch('https://api.anthropic.com/v1/messages', {
-    method:'POST',
-    headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:300,system:TASTER_SYSTEM,messages:[{role:'user',content:message}]})
-  })
-  .then(r=>r.json())
-  .then(data=>{
-    const reply = data.content?.[0]?.text || 'Unable to generate response.';
-    thinkDiv.innerHTML = reply.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
-    msgs.scrollTop = msgs.scrollHeight;
-    if(interactionCount >= MAX_INTERACTIONS) setTimeout(showUpgradePrompt, 1000);
-  })
-  .catch(()=>{
-    thinkDiv.textContent = 'Connection error. Please try again.';
-    if(interactionCount >= MAX_INTERACTIONS) setTimeout(showUpgradePrompt, 500);
-  });
-}
-
-function showUpgradePrompt(){
-  const msgs = document.getElementById('chat-messages');
-  const upgrade = document.createElement('div');
-  upgrade.className = 'upgrade-prompt';
-  upgrade.innerHTML = `
-    <h4>You've seen what the Intelligence Advisor can do with the dashboard alone.</h4>
-    <p>The full report unlocks:</p>
-    <ul>
-      <li>Strategic advisory across 9 intelligence sections</li>
-      <li>Meeting-specific intelligence and smart questions</li>
-      <li>Complete web performance breakdown with 5 priority actions</li>
-      <li>"Advise the CEO" interactive mode</li>
-      <li>Unlimited advisor conversations</li>
-    </ul>
-    <a href="mailto:hello@frictionandtoil.com?subject=Full Intelligence Report Request — Ogilvie Fleet" class="cta-button" style="display:block;text-align:center;padding:10px">Request Full Report →</a>`;
-  msgs.appendChild(upgrade);
-  msgs.scrollTop = msgs.scrollHeight;
-  document.querySelector('.chat-footer').innerHTML = '<div class="chat-locked-notice">Preview limit reached — request full report for unlimited access</div>';
-}
-</script>
+</main>
 
 </body>
 </html>
