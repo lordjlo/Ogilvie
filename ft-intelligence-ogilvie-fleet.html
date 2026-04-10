@@ -485,6 +485,14 @@ tr:last-child td{border-bottom:none}
 .sidebar-section[data-side="web"] .score-pill{position:relative;padding-left:16px}
 .sidebar-section[data-side="web"] .score-pill::before{content:"";position:absolute;left:5px;top:50%;width:6px;height:6px;border-radius:50%;transform:translateY(-50%);background:currentColor;box-shadow:0 0 6px currentColor}
 
+/* Mobile sub-nav */
+.mobile-nav{display:none;position:fixed;top:calc(var(--header-h) + var(--tabbar-h));left:0;right:0;height:42px;background:#070f24;border-bottom:1px solid var(--border);z-index:98;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap;padding:0 12px;scrollbar-width:none}
+.mobile-nav::-webkit-scrollbar{display:none}
+.mobile-nav-group{display:none;height:100%;align-items:center;gap:6px}
+.mobile-nav-group.active{display:inline-flex}
+.mnav{padding:6px 14px;background:var(--surface);border:1px solid var(--border);border-radius:20px;color:var(--muted);font-size:11px;font-weight:600;white-space:nowrap;cursor:pointer;transition:all 0.2s;flex:0 0 auto}
+.mnav.active{background:rgba(201,162,39,0.15);border-color:rgba(201,162,39,0.4);color:var(--gold-high)}
+
 /* Matrix grid */
 .matrix-grid{display:grid;grid-template-columns:140px 1fr 1fr;gap:12px;margin:16px 0}
 .matrix-cell{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;font-size:13px;color:#c8cee0}
@@ -500,9 +508,11 @@ tr:last-child td{border-bottom:none}
   .wp-subrings{grid-template-columns:repeat(3,1fr)}
 }
 @media (max-width:760px){
-  :root{--classify-h:28px;--header-h:58px;--tabbar-h:50px}
+  :root{--header-h:58px;--tabbar-h:50px;--mnav-h:42px}
   html,body{overflow-x:hidden}
   .sidebar{display:none}
+  .mobile-nav{display:block}
+  .app{padding-top:calc(var(--header-h) + var(--tabbar-h) + var(--mnav-h))}
   .main{margin-left:0;width:100%;max-width:100%;padding:20px 16px 48px}
   .classify-bar{justify-content:center;background:rgba(5,10,24,0.98);font-size:9px;padding:0 12px;white-space:nowrap;overflow:hidden}
   .classify-left{display:none}
@@ -532,7 +542,8 @@ tr:last-child td{border-bottom:none}
   .rings svg,.wp-subrings svg{max-width:130px;margin:0 auto;display:block}
   pre{font-size:10px;overflow-x:auto;white-space:pre}
   .section-ring-wrap{flex-wrap:wrap;gap:10px}
-  .web-progress{left:0}
+  .web-progress{left:0;top:calc(var(--header-h) + var(--tabbar-h) + var(--mnav-h) - 2px)}
+  .section{scroll-margin-top:calc(var(--header-h) + var(--tabbar-h) + var(--mnav-h) + 16px)}
   .gap-row{grid-template-columns:1fr;gap:6px}
   .gap-track{height:16px}
   .ft-footer{margin-left:0 !important;width:100% !important;display:block !important;text-align:center !important;padding:20px 16px !important}
@@ -621,6 +632,48 @@ tr:last-child td{border-bottom:none}
     <button class="tab" data-tab="advisor"><span class="ico">🎯</span>Advisor</button>
     <button class="tab" data-tab="web"><span class="ico">🌐</span>Web Intelligence</button>
     <div class="pill" id="pill"></div>
+  </div>
+</div>
+
+<div class="mobile-nav" id="mobileNav">
+  <div class="mobile-nav-group active" data-mnav="dashboard">
+    <div class="mnav active" data-section="d-mif">MIF</div>
+    <div class="mnav" data-section="d-rings">Rings</div>
+    <div class="mnav" data-section="d-scenarios">Bear/Base/Bull</div>
+    <div class="mnav" data-section="d-top3">Top 3</div>
+    <div class="mnav" data-section="d-90day">90-Day</div>
+  </div>
+  <div class="mobile-nav-group" data-mnav="ceo">
+    <div class="mnav active" data-section="c-situation">Situation</div>
+    <div class="mnav" data-section="c-salsac">Sal-Sac</div>
+    <div class="mnav" data-section="c-zenith">Zenith</div>
+    <div class="mnav" data-section="c-digital">Digital</div>
+    <div class="mnav" data-section="c-crosssub">Cross-Sub</div>
+    <div class="mnav" data-section="c-tech">Tech</div>
+    <div class="mnav" data-section="c-options">Options</div>
+    <div class="mnav" data-section="c-acts">Act Now</div>
+    <div class="mnav" data-section="c-bottom">Bottom Line</div>
+  </div>
+  <div class="mobile-nav-group" data-mnav="advisor">
+    <div class="mnav active" data-section="a-opening">Opening</div>
+    <div class="mnav" data-section="a-asset">Asset</div>
+    <div class="mnav" data-section="a-price">Price</div>
+    <div class="mnav" data-section="a-family">Family</div>
+    <div class="mnav" data-section="a-vuln">Vulnerabilities</div>
+    <div class="mnav" data-section="a-timing">Timing</div>
+    <div class="mnav" data-section="a-approach">Approach</div>
+  </div>
+  <div class="mobile-nav-group" data-mnav="web">
+    <div class="mnav active" data-section="w-overview">Context</div>
+    <div class="mnav" data-section="w-impact">Impact</div>
+    <div class="mnav" data-section="w-ring2">Score</div>
+    <div class="mnav" data-section="w-search">Search</div>
+    <div class="mnav" data-section="w-ai">AI</div>
+    <div class="mnav" data-section="w-design">Design</div>
+    <div class="mnav" data-section="w-brand">Brand</div>
+    <div class="mnav" data-section="w-competitive">Competitive</div>
+    <div class="mnav" data-section="w-growth">Growth</div>
+    <div class="mnav" data-section="w-actions">Actions</div>
   </div>
 </div>
 
@@ -2026,6 +2079,49 @@ document.querySelectorAll('.side-item').forEach(function(item){
       target.classList.add('active');
       window.scrollTo({top:0,behavior:'instant'});
       if(section==='d-rings') setTimeout(initRings,200);
+    }
+  });
+});
+
+// Mobile sub-nav — pill clicks switch sections, tab switches sync groups
+document.querySelectorAll('.mnav').forEach(function(pill){
+  pill.addEventListener('click',function(){
+    var section=pill.dataset.section;
+    var group=pill.closest('.mobile-nav-group');
+    var tabName=group.dataset.mnav;
+    group.querySelectorAll('.mnav').forEach(function(p){p.classList.remove('active')});
+    pill.classList.add('active');
+    // sync sidebar
+    var sideSection=document.querySelector('.sidebar-section[data-side="'+tabName+'"]');
+    if(sideSection){
+      sideSection.querySelectorAll('.side-item').forEach(function(i){i.classList.remove('active')});
+      var sideTarget=sideSection.querySelector('.side-item[data-section="'+section+'"]');
+      if(sideTarget) sideTarget.classList.add('active');
+    }
+    // switch content section
+    var content=document.querySelector('.tab-content[data-tab="'+tabName+'"]');
+    content.querySelectorAll('.section').forEach(function(s){s.classList.remove('active')});
+    var target=content.querySelector('.section[data-section="'+section+'"]');
+    if(target){
+      target.classList.add('active');
+      window.scrollTo({top:0,behavior:'instant'});
+      if(section==='d-rings') setTimeout(initRings,200);
+    }
+    // scroll pill into view
+    pill.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+  });
+});
+// Sync mobile nav groups when tab changes
+document.querySelectorAll('.tab').forEach(function(tab){
+  tab.addEventListener('click',function(){
+    var name=tab.dataset.tab;
+    document.querySelectorAll('.mobile-nav-group').forEach(function(g){g.classList.remove('active')});
+    var mnavGroup=document.querySelector('.mobile-nav-group[data-mnav="'+name+'"]');
+    if(mnavGroup){
+      mnavGroup.classList.add('active');
+      mnavGroup.querySelectorAll('.mnav').forEach(function(p){p.classList.remove('active')});
+      var first=mnavGroup.querySelector('.mnav');
+      if(first) first.classList.add('active');
     }
   });
 });
